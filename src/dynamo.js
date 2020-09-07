@@ -80,7 +80,7 @@ class GameState {
     update(core) {
         return;
     }
-};
+}
 
 
 class Engine {
@@ -115,4 +115,4 @@ class Engine {
             current_state.update(this.core);
         }
     }
-};
+}

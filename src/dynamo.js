@@ -115,4 +115,11 @@ class Engine {
             current_state.update(this.core);
         }
     }
+
+    run() {
+        var _this = this;
+        setInterval(function () {
+            _this.tick();
+        }, (1.0/60.0) * 1000.0);
+    }
 }

@@ -1,27 +1,3 @@
-class Input {
-    constructor() {
-        this.state = {};
-    }
-
-    get_state(key) {
-        if(key in this.state) {
-            return this.state[key];
-        }
-        return false;
-    }
-
-    poll() {
-        var _this = this;
-        document.addEventListener('keydown', function(event) {
-            _this.state[event.key] = true;
-        });
-        document.addEventListener('keyup', function(event) {
-            _this.state[event.key] = false;
-        });
-    }
-}
-
-
 class Display {
     constructor() {
         this.canvas = document.getElementById("display");
@@ -54,6 +30,45 @@ class Display {
             0, 0, 
             this.canvas.width, this.canvas.height
         );
+    }
+}
+
+
+class Input {
+    constructor() {
+        this.state = {};
+        this.mouse = [0, 0];
+    }
+
+    get_state(key) {
+        if(key in this.state) {
+            return this.state[key];
+        }
+        return false;
+    }
+
+    poll(canvas) {
+        var _this = this;
+        document.addEventListener('keydown', function(event) {
+            _this.state[event.key] = true;
+        });
+        document.addEventListener('keyup', function(event) {
+            _this.state[event.key] = false;
+        });
+        document.addEventListener('mousedown', function(event) {
+            _this.state["Mouse"+event.which] = true;
+        });
+        document.addEventListener('mouseup', function(event) {
+            _this.state["Mouse"+event.which] = false;
+        });
+        document.addEventListener('mousemove', function(event) {
+            var rect = canvas.getBoundingClientRect();
+            var scaleX = canvas.width / rect.width;
+            var scaleY = canvas.height / rect.height;
+        
+            _this.mouse[0] = (event.clientX - rect.left) * scaleX;
+            _this.mouse[1] = (event.clientY - rect.top) * scaleY;
+        });
     }
 }
 
@@ -98,7 +113,7 @@ class Engine {
 
     tick() {
         this.display.refresh();
-        this.input.poll();
+        this.input.poll(this.display.canvas);
 
         var current_state = this.states[0];
         var next = current_state.next;

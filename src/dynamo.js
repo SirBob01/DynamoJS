@@ -34,6 +34,53 @@ class Display {
 }
 
 
+class Jukebox {
+    constructor() {
+        this.context = new AudioContext();
+        this.volume = 1.0;
+
+        // url : bytestream
+        this.sounds = {};
+        this.xmlhttp = new XMLHttpRequest();
+        this.xmlhttp.responseType = 'arraybuffer';
+    }
+    
+    load_sound(url) {
+        var _this = this;
+        this.xmlhttp.onreadystatechange = function() {
+            if(_this.xmlhttp.status == 200 && _this.xmlhttp.readyState == 4) {
+                _this.context.decodeAudioData(_this.xmlhttp.response, 
+                    function(buffer) {
+                        _this.sounds[url] = buffer;
+                    },
+                    function(e) {
+                        console.log("Error decoding "+url+": "+e.err);
+                    });
+            }
+        };
+        this.xmlhttp.open("GET", url, true);
+        this.xmlhttp.send();
+    }
+
+    play_sound(url, volume) {
+        if(!(url in this.sounds)) {
+            load_sound(url);
+        }
+        var source_node = this.context.createBufferSource();
+        var gain_node = this.context.createGain();
+
+        source_node.connect(gain_node);
+        gain_node.connect(this.context.destination);
+        
+        // Set values
+        source_node.buffer = this.sounds[url];
+        gain_node.gain.value = volume * this.volume;
+
+        source_node.start(0);
+    }
+}
+
+
 class Input {
     constructor() {
         this.state = {};
@@ -102,9 +149,11 @@ class Engine {
     constructor(initial_state) {
         this.display = new Display();
         this.input = new Input();
+        this.audio = new Jukebox();
         this.core = {
-            'display' : this.display,
-            'input' : this.input
+            display : this.display,
+            audio : this.audio,
+            input : this.input
         };
 
         this.states = [initial_state];

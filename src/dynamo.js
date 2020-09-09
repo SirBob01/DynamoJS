@@ -39,19 +39,19 @@ class Jukebox {
         this.context = new AudioContext();
         this.volume = 1.0;
 
-        // url : bytestream
+        // id : bytestream
         this.sounds = {};
         this.xmlhttp = new XMLHttpRequest();
         this.xmlhttp.responseType = 'arraybuffer';
     }
     
-    load_sound(url) {
+    load_sound(url, id) {
         var _this = this;
         this.xmlhttp.onreadystatechange = function() {
             if(_this.xmlhttp.status == 200 && _this.xmlhttp.readyState == 4) {
                 _this.context.decodeAudioData(_this.xmlhttp.response, 
                     function(buffer) {
-                        _this.sounds[url] = buffer;
+                        _this.sounds[id] = buffer;
                     },
                     function(e) {
                         console.log("Error decoding "+url+": "+e.err);
@@ -62,9 +62,9 @@ class Jukebox {
         this.xmlhttp.send();
     }
 
-    play_sound(url, volume) {
-        if(!(url in this.sounds)) {
-            load_sound(url);
+    play_sound(id, volume) {
+        if(!(id in this.sounds)) {
+            throw id+" sound is not loaded into Jukebox.";
         }
         var source_node = this.context.createBufferSource();
         var gain_node = this.context.createGain();
@@ -72,8 +72,8 @@ class Jukebox {
         source_node.connect(gain_node);
         gain_node.connect(this.context.destination);
         
-        // Set values
-        source_node.buffer = this.sounds[url];
+        // Set initial values
+        source_node.buffer = this.sounds[id];
         gain_node.gain.value = volume * this.volume;
 
         source_node.start(0);

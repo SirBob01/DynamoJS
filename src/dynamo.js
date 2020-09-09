@@ -13,10 +13,12 @@ class Display {
 
     draw_sprite(sprite) {
         this.display.fillStyle = sprite.color;
+        this.display.globalAlpha = sprite.alpha;
         this.display.fillRect(
             sprite.pos[0] - sprite.dim[0]/2.0, sprite.pos[1] - sprite.dim[1]/2.0, 
             sprite.dim[0], sprite.dim[1]
         );
+        this.display.globalAlpha = 1.0;
     }
 
     draw_text(string, font, size, color, pos) {
@@ -41,15 +43,15 @@ class Jukebox {
 
         // id : bytestream
         this.sounds = {};
-        this.xmlhttp = new XMLHttpRequest();
-        this.xmlhttp.responseType = 'arraybuffer';
     }
     
     load_sound(url, id) {
         var _this = this;
-        this.xmlhttp.onreadystatechange = function() {
-            if(_this.xmlhttp.status == 200 && _this.xmlhttp.readyState == 4) {
-                _this.context.decodeAudioData(_this.xmlhttp.response, 
+        var request = new XMLHttpRequest();
+        request.responseType = 'arraybuffer';
+        request.onreadystatechange = function() {
+            if(request.status == 200 && request.readyState == 4) {
+                _this.context.decodeAudioData(request.response, 
                     function(buffer) {
                         _this.sounds[id] = buffer;
                     },
@@ -58,8 +60,8 @@ class Jukebox {
                     });
             }
         };
-        this.xmlhttp.open("GET", url, true);
-        this.xmlhttp.send();
+        request.open("GET", url, true);
+        request.send();
     }
 
     play_sound(id, volume) {

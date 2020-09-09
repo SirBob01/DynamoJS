@@ -1,3 +1,72 @@
+class Vec2D {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    add(b) {
+        return new Vec2D(this.x + b.x, this.y + b.y);
+    }
+
+    sub(b) {
+        return new Vec2D(this.x - b.x, this.y - b.y);
+    }
+
+    scale(s) {
+        return new Vec2D(this.x * s, this.y * s);
+    }
+
+    length_sq() {
+        return this.x * this.x + this.y * this.y;
+    }
+
+    length() {
+        return Math.sqrt(this.length_sq());
+    }
+
+    get() {
+        return [this.x, this.y];
+    }
+}
+
+
+class AABB {
+    constructor(center, dim) {
+        this.center = center;
+        this.dim = dim;
+    }
+
+    min() {
+        return this.center.sub(this.dim.scale(0.5));
+    }
+
+    max() {
+        return this.center.add(this.dim.scale(0.5));
+    }
+
+    is_in_bounds(point) {
+        var min = this.min();
+        var max = this.max();
+
+        var hor = point.x < max.x && point.x > min.x;
+        var ver = point.y < max.y && point.y > min.y;
+        return hor && ver;
+    }
+
+    is_colliding(other) {
+        var min = this.min();
+        var max = this.max();
+
+        var other_min = other.min();
+        var other_max = other.max();
+
+        var hor = other_max.x > min.x && other_min.x < max.x;
+        var ver = other_max.y > min.y && other_min.y < max.y;
+        return hor && ver;
+    }
+}
+
+
 class Display {
     constructor() {
         this.canvas = document.getElementById("display");
@@ -5,18 +74,21 @@ class Display {
     }
 
     get_size() {
-        return [
+        return new Vec2D(
             this.canvas.width,
             this.canvas.height
-        ];
+        );
     }
 
-    draw_sprite(sprite) {
-        this.display.fillStyle = sprite.color;
-        this.display.globalAlpha = sprite.alpha;
+    draw_rect(aabb, color, alpha=1.0) {
+        this.display.fillStyle = color;
+        this.display.globalAlpha = alpha;
+            
+        // Offset drawing so it is centered
+        var upperleft = aabb.min();
         this.display.fillRect(
-            sprite.pos[0] - sprite.dim[0]/2.0, sprite.pos[1] - sprite.dim[1]/2.0, 
-            sprite.dim[0], sprite.dim[1]
+            upperleft.x, upperleft.y, 
+            aabb.dim.x, aabb.dim.y
         );
         this.display.globalAlpha = 1.0;
     }
@@ -24,7 +96,7 @@ class Display {
     draw_text(string, font, size, color, pos) {
         this.display.fillStyle = color;
         this.display.font = size + 'px ' + font;
-        this.display.fillText(string, pos[0], pos[1]);
+        this.display.fillText(string, pos.x, pos.y);
     }
 
     refresh() {
@@ -86,7 +158,7 @@ class Jukebox {
 class Input {
     constructor() {
         this.state = {};
-        this.mouse = [0, 0];
+        this.mouse = new Vec2D(0, 0);
     }
 
     get_state(key) {
@@ -115,8 +187,8 @@ class Input {
             var scaleX = canvas.width / rect.width;
             var scaleY = canvas.height / rect.height;
         
-            _this.mouse[0] = (event.clientX - rect.left) * scaleX;
-            _this.mouse[1] = (event.clientY - rect.top) * scaleY;
+            _this.mouse.x = (event.clientX - rect.left) * scaleX;
+            _this.mouse.y = (event.clientY - rect.top) * scaleY;
         });
     }
 }

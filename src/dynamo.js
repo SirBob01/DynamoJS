@@ -1,3 +1,39 @@
+// Utility functions
+function lerp(a, b, t) {
+    return (1 - t) * a + t * b;
+}
+
+function clamp(x, min, max) {
+    return Math.min(x, Math.max(x, min));
+}
+
+// Utility classes
+class Color {
+    constructor(r, g, b, a=255) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    lerp(other, t) {
+        var r = lerp(this.r, other.r, t);
+        var g = lerp(this.g, other.g, t);
+        var b = lerp(this.b, other.b, t);
+        var a = lerp(this.a, other.a, t);
+        return new Color(r, g, b, a);
+    }
+
+    str() {
+        return "rgb("+this.r+","+this.g+","+this.b+")";
+    }
+
+    alpha() {
+        return this.a/255.0;
+    }
+}
+
+
 class Vec2D {
     constructor(x, y) {
         this.x = x;
@@ -67,6 +103,7 @@ class AABB {
 }
 
 
+// Core Modules
 class Display {
     constructor() {
         this.canvas = document.getElementById("display");
@@ -80,9 +117,9 @@ class Display {
         );
     }
 
-    draw_rect(aabb, color, alpha=1.0) {
-        this.display.fillStyle = color;
-        this.display.globalAlpha = alpha;
+    draw_rect(aabb, color) {
+        this.display.fillStyle = color.str();
+        this.display.globalAlpha = color.alpha();
             
         // Offset drawing so it is centered
         var upperleft = aabb.min();
@@ -94,9 +131,13 @@ class Display {
     }
 
     draw_text(string, font, size, color, pos) {
-        this.display.fillStyle = color;
+        this.display.fillStyle = color.str();
+        this.display.globalAlpha = color.alpha();
+
         this.display.font = size + 'px ' + font;
         this.display.fillText(string, pos.x, pos.y);
+        
+        this.display.globalAlpha = 1.0;
     }
 
     refresh() {

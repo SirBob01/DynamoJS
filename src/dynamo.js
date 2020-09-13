@@ -16,6 +16,10 @@ class Color {
         this.a = a;
     }
 
+    copy() {
+        return new Color(this.r, this.g, this.b, this.a);
+    }
+
     lerp(other, t) {
         var r = lerp(this.r, other.r, t);
         var g = lerp(this.g, other.g, t);
@@ -38,6 +42,10 @@ class Vec2D {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    copy() {
+        return new Vec2D(this.x, this.y);
     }
 
     add(b) {
@@ -70,6 +78,10 @@ class AABB {
     constructor(center, dim) {
         this.center = center;
         this.dim = dim;
+    }
+
+    copy() {
+        return new AABB(this.center, this.dim);
     }
 
     min() {

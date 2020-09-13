@@ -75,13 +75,16 @@ class Vec2D {
 
 
 class AABB {
-    constructor(center, dim) {
-        this.center = center;
-        this.dim = dim;
+    constructor(x, y, w, h) {
+        this.center = new Vec2D(x, y);
+        this.dim = new Vec2D(w, h);
     }
 
     copy() {
-        return new AABB(this.center, this.dim);
+        return new AABB(
+            this.center.x, this.center.y, 
+            this.dim.x, this.dim.y
+        );
     }
 
     min() {
@@ -115,6 +118,61 @@ class AABB {
 }
 
 
+class Sprite {
+    constructor(file, frame_x=0, frame_y=0) {
+        this.img = new Image();
+        this.img.src = file;
+
+        this.frames = [];
+
+        this.accumulator = 0;
+        this.current_frame = 0;
+        this.finished = false;
+
+        // Synchronize resource loading
+        var _this = this;
+        this.img.onload = function() {
+            if(frame_x == 0 || frame_y == 0) {
+                _this.size = new Vec2D(_this.img.width, _this.img.height);
+            }
+            else {
+                _this.size = new Vec2D(frame_x, frame_y);
+            }
+
+            // Calculate individual frame coordinates
+            var hor_frames = _this.img.width/_this.size.x;
+            var ver_frames = _this.img.height/_this.size.y;
+            _this.max_frames = hor_frames * ver_frames;
+            for(var i = 0; i < hor_frames; i++) {
+                for(var j = 0; j < ver_frames; j++) {
+                    _this.frames.push(new Vec2D(
+                        i*_this.size.x, 
+                        j*_this.size.y
+                    ));
+                }
+            }            
+        }
+    }
+
+    animate(dt, fps, loop=false) {
+        this.accumulator += dt;
+        if(this.accumulator >= (1000.0/fps)) {
+            this.current_frame++;
+            this.accumulator = 0;
+        }
+        if(this.current_frame > this.max_frames - 1) {
+            if(loop) {
+                this.current_frame = 0;
+            }
+            else {
+                this.current_frame = this.max_frames-1;
+                this.finished = true;
+            }
+        }
+    }
+}
+
+
 // Core Modules
 class Display {
     constructor() {
@@ -127,6 +185,32 @@ class Display {
             this.canvas.width,
             this.canvas.height
         );
+    }
+
+    draw_sprite(sprite, aabb, opacity=1.0) {
+        this.display.globalAlpha = opacity;
+        var frame = sprite.frames[sprite.current_frame];
+        if(aabb.dim.x && aabb.dim.y) {
+            var upperleft = aabb.min();
+            this.display.drawImage(
+                sprite.img,
+                frame.x, frame.y,
+                sprite.size.x, sprite.size.y,
+                upperleft.x, upperleft.y,
+                aabb.dim.x, aabb.dim.y
+            );
+        }
+        else {
+            var pos = aabb.center.sub(sprite.size.scale(0.5));
+            this.display.drawImage(
+                sprite.img,
+                frame.x, frame.y,
+                sprite.size.x, sprite.size.y,
+                pos.x, pos.y,
+                sprite.size.x, sprite.size.y
+            );
+        }
+        this.display.globalAlpha = 1.0;
     }
 
     draw_rect(aabb, color) {

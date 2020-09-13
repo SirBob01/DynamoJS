@@ -213,16 +213,42 @@ class Display {
         this.display.globalAlpha = 1.0;
     }
 
-    draw_rect(aabb, color) {
-        this.display.fillStyle = color.str();
+    draw_rect(aabb, color, fill=false, linewidth=1) {
         this.display.globalAlpha = color.alpha();
-            
+        
         // Offset drawing so it is centered
         var upperleft = aabb.min();
-        this.display.fillRect(
-            upperleft.x, upperleft.y, 
-            aabb.dim.x, aabb.dim.y
-        );
+        if(fill) {
+            this.display.fillStyle = color.str();
+            this.display.fillRect(
+                upperleft.x, upperleft.y, 
+                aabb.dim.x, aabb.dim.y
+            );
+        }
+        else {
+            this.display.lineWidth = linewidth;
+            this.display.strokeStyle = color.str();
+            this.display.strokeRect(
+                upperleft.x, upperleft.y,
+                aabb.dim.x, aabb.dim.y
+            );
+        }
+        this.display.globalAlpha = 1.0;
+    }
+
+    draw_circle(center, radius, color, fill=false, linewidth=1) {
+        this.display.globalAlpha = color.alpha();
+        this.display.beginPath();
+        this.display.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+        if(fill) {
+            this.display.fillStyle = color.str();
+            this.display.fill();
+        }
+        else {
+            this.display.lineWidth = linewidth;
+            this.display.strokeStyle = color.str();
+            this.display.stroke();
+        }
         this.display.globalAlpha = 1.0;
     }
 

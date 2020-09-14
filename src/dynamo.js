@@ -119,7 +119,7 @@ class AABB {
 
 
 class Sprite {
-    constructor(file, frame_x=0, frame_y=0) {
+    constructor(file, frame_x=0, frame_y=0, nframes=0) {
         this.img = new Image();
         this.img.src = file;
 
@@ -128,6 +128,11 @@ class Sprite {
         this.accumulator = 0;
         this.current_frame = 0;
         this.finished = false;
+        this.max_frames = nframes;
+
+        // Drawing properties
+        this.flip = new Vec2D(1, 1);
+        this.opacity = 1.0;
 
         // Synchronize resource loading
         var _this = this;
@@ -139,10 +144,13 @@ class Sprite {
                 _this.size = new Vec2D(frame_x, frame_y);
             }
 
-            // Calculate individual frame coordinates
             var hor_frames = _this.img.width/_this.size.x;
             var ver_frames = _this.img.height/_this.size.y;
-            _this.max_frames = hor_frames * ver_frames;
+            if(this.max_frames == 0) {
+                this.max_frames = hor_frames * ver_frames;
+            }
+
+            // Calculate individual frame coordinates
             for(var i = 0; i < hor_frames; i++) {
                 for(var j = 0; j < ver_frames; j++) {
                     _this.frames.push(new Vec2D(
@@ -150,7 +158,7 @@ class Sprite {
                         j*_this.size.y
                     ));
                 }
-            }            
+            }
         }
     }
 
@@ -187,29 +195,38 @@ class Display {
         );
     }
 
-    draw_sprite(sprite, aabb, opacity=1.0) {
-        this.display.globalAlpha = opacity;
+    draw_sprite(sprite, aabb) {
+        this.display.globalAlpha = sprite.opacity;
+        this.display.imageSmoothingEnabled = false;
+        this.display.scale(sprite.flip.x, sprite.flip.y);
+
         var frame = sprite.frames[sprite.current_frame];
         if(aabb.dim.x && aabb.dim.y) {
-            var upperleft = aabb.min();
+            var point = aabb.center.copy();
+            point.x -= aabb.dim.x * 0.5 * sprite.flip.x;
+            point.y -= aabb.dim.y * 0.5 * sprite.flip.y;
+
             this.display.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
-                upperleft.x, upperleft.y,
+                point.x * sprite.flip.x, point.y * sprite.flip.y,
                 aabb.dim.x, aabb.dim.y
             );
         }
         else {
-            var pos = aabb.center.sub(sprite.size.scale(0.5));
+            var point = aabb.center.copy();
+            point.x -= sprite.size.x * 0.5 * sprite.flip.x;
+            point.y -= sprite.size.y * 0.5 * sprite.flip.y;
             this.display.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
-                pos.x, pos.y,
+                point.x * sprite.flip.x, point.y * sprite.flip.y,
                 sprite.size.x, sprite.size.y
             );
         }
+        this.display.setTransform(1, 0, 0, 1, 0, 0);
         this.display.globalAlpha = 1.0;
     }
 

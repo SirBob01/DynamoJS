@@ -28,8 +28,39 @@ class Color {
         return new Color(r, g, b, a);
     }
 
-    str() {
+    get() {
         return "rgb("+this.r+","+this.g+","+this.b+")";
+    }
+
+    alpha() {
+        return this.a/255.0;
+    }
+}
+
+
+class ColorGradient {
+    constructor(surface, type, values, alpha=255) {
+        if(type == "linear") {
+            this.grad = surface.surface.createLinearGradient( 
+                values.start.x, values.start.y,
+                values.end.x, values.end.y
+            );
+        }
+        else {
+            this.grad = surface.surface.createRadialGradient( 
+                values.in_pos.x, values.in_pos.y, values.in_r, 
+                values.out_pos.x, values.out_pos.y, values.out_r,
+            );
+        }
+        this.a = alpha;
+    }
+
+    add_value(color, t) {
+        this.grad.addColorStop(t, color.get());
+    }
+
+    get() {
+        return this.grad;
     }
 
     alpha() {
@@ -262,7 +293,7 @@ class Surface {
         // Offset drawing so it is centered
         var upperleft = aabb.min();
         if(fill) {
-            this.surface.fillStyle = color.str();
+            this.surface.fillStyle = color.get();
             this.surface.fillRect(
                 upperleft.x, upperleft.y, 
                 aabb.dim.x, aabb.dim.y
@@ -270,7 +301,7 @@ class Surface {
         }
         else {
             this.surface.lineWidth = linewidth;
-            this.surface.strokeStyle = color.str();
+            this.surface.strokeStyle = color.get();
             this.surface.strokeRect(
                 upperleft.x, upperleft.y,
                 aabb.dim.x, aabb.dim.y
@@ -286,12 +317,12 @@ class Surface {
         this.surface.beginPath();
         this.surface.arc(center.x, center.y, radius, 0, 2 * Math.PI);
         if(fill) {
-            this.surface.fillStyle = color.str();
+            this.surface.fillStyle = color.get();
             this.surface.fill();
         }
         else {
             this.surface.lineWidth = linewidth;
-            this.surface.strokeStyle = color.str();
+            this.surface.strokeStyle = color.get();
             this.surface.stroke();
         }
         this.surface.globalAlpha = 1.0;
@@ -299,7 +330,7 @@ class Surface {
     }
 
     draw_text(string, font, size, color, pos, blend="source-over") {
-        this.surface.fillStyle = color.str();
+        this.surface.fillStyle = color.get();
         this.surface.globalAlpha = color.alpha();
         this.surface.globalCompositeOperation = blend;
 
@@ -319,6 +350,7 @@ class Surface {
 }
 
 
+// TODO: Add stream for layering tracks
 class Jukebox {
     constructor() {
         this.context = new AudioContext();

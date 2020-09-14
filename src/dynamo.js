@@ -182,31 +182,55 @@ class Sprite {
 
 
 // Core Modules
-class Display {
-    constructor() {
-        this.canvas = document.getElementById("display");
-        this.display = this.canvas.getContext("2d");
+class Surface {
+    constructor(w=0, h=0, canvas=null) {
+        if(!canvas) {
+            this.canvas = document.createElement('canvas');        
+            this.canvas.width = w;
+            this.canvas.height = h;
+        }
+        else {
+            this.canvas = canvas;
+        }
+        this.surface = this.canvas.getContext("2d");
     }
 
-    get_size() {
-        return new Vec2D(
+    rect() {
+        return new AABB(
+            this.canvas.width/2.0,
+            this.canvas.height/2.0,
             this.canvas.width,
             this.canvas.height
-        );
+        )
     }
 
-    draw_sprite(sprite, aabb) {
-        this.display.globalAlpha = sprite.opacity;
-        this.display.imageSmoothingEnabled = false;
-        this.display.scale(sprite.flip.x, sprite.flip.y);
+    fill(color) {
+        this.draw_rect(this.rect(), color, true);
+    }
+
+    draw_surface(src, aabb, blend="source-over") {
+        this.surface.globalCompositeOperation = blend;
+        var upperleft = aabb.min();
+        this.surface.drawImage(
+            src.canvas, 
+            upperleft.x, upperleft.y,
+            aabb.dim.x, aabb.dim.y
+        );
+        this.surface.globalCompositeOperation = "source-over";
+    }
+
+    draw_sprite(sprite, aabb, blend="source-over") {
+        this.surface.globalAlpha = sprite.opacity;
+        this.surface.globalCompositeOperation = blend;
+        this.surface.imageSmoothingEnabled = false;
+        this.surface.scale(sprite.flip.x, sprite.flip.y);
 
         var frame = sprite.frames[sprite.current_frame];
         if(aabb.dim.x && aabb.dim.y) {
             var point = aabb.center.copy();
             point.x -= aabb.dim.x * 0.5 * sprite.flip.x;
             point.y -= aabb.dim.y * 0.5 * sprite.flip.y;
-
-            this.display.drawImage(
+            this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
@@ -218,7 +242,7 @@ class Display {
             var point = aabb.center.copy();
             point.x -= sprite.size.x * 0.5 * sprite.flip.x;
             point.y -= sprite.size.y * 0.5 * sprite.flip.y;
-            this.display.drawImage(
+            this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
@@ -226,61 +250,68 @@ class Display {
                 sprite.size.x, sprite.size.y
             );
         }
-        this.display.setTransform(1, 0, 0, 1, 0, 0);
-        this.display.globalAlpha = 1.0;
+        this.surface.setTransform(1, 0, 0, 1, 0, 0);
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
     }
 
-    draw_rect(aabb, color, fill=false, linewidth=1) {
-        this.display.globalAlpha = color.alpha();
+    draw_rect(aabb, color, fill=false, linewidth=1, blend="source-over") {
+        this.surface.globalAlpha = color.alpha();
+        this.surface.globalCompositeOperation = blend;
         
         // Offset drawing so it is centered
         var upperleft = aabb.min();
         if(fill) {
-            this.display.fillStyle = color.str();
-            this.display.fillRect(
+            this.surface.fillStyle = color.str();
+            this.surface.fillRect(
                 upperleft.x, upperleft.y, 
                 aabb.dim.x, aabb.dim.y
             );
         }
         else {
-            this.display.lineWidth = linewidth;
-            this.display.strokeStyle = color.str();
-            this.display.strokeRect(
+            this.surface.lineWidth = linewidth;
+            this.surface.strokeStyle = color.str();
+            this.surface.strokeRect(
                 upperleft.x, upperleft.y,
                 aabb.dim.x, aabb.dim.y
             );
         }
-        this.display.globalAlpha = 1.0;
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
     }
 
-    draw_circle(center, radius, color, fill=false, linewidth=1) {
-        this.display.globalAlpha = color.alpha();
-        this.display.beginPath();
-        this.display.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+    draw_circle(center, radius, color, fill=false, linewidth=1, blend="source-over") {
+        this.surface.globalAlpha = color.alpha();
+        this.surface.globalCompositeOperation = blend;
+        this.surface.beginPath();
+        this.surface.arc(center.x, center.y, radius, 0, 2 * Math.PI);
         if(fill) {
-            this.display.fillStyle = color.str();
-            this.display.fill();
+            this.surface.fillStyle = color.str();
+            this.surface.fill();
         }
         else {
-            this.display.lineWidth = linewidth;
-            this.display.strokeStyle = color.str();
-            this.display.stroke();
+            this.surface.lineWidth = linewidth;
+            this.surface.strokeStyle = color.str();
+            this.surface.stroke();
         }
-        this.display.globalAlpha = 1.0;
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
     }
 
-    draw_text(string, font, size, color, pos) {
-        this.display.fillStyle = color.str();
-        this.display.globalAlpha = color.alpha();
+    draw_text(string, font, size, color, pos, blend="source-over") {
+        this.surface.fillStyle = color.str();
+        this.surface.globalAlpha = color.alpha();
+        this.surface.globalCompositeOperation = blend;
 
-        this.display.font = size + 'px ' + font;
-        this.display.fillText(string, pos.x, pos.y);
+        this.surface.font = size + 'px ' + font;
+        this.surface.fillText(string, pos.x, pos.y);
         
-        this.display.globalAlpha = 1.0;
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
     }
 
-    refresh() {
-        this.display.clearRect(
+    clear() {
+        this.surface.clearRect(
             0, 0, 
             this.canvas.width, this.canvas.height
         );
@@ -401,7 +432,10 @@ class GameState {
 
 class Engine {
     constructor(initial_state) {
-        this.display = new Display();
+        this.display = new Surface(
+            0, 0,
+            document.getElementById("display")
+        );
         this.input = new Input();
         this.audio = new Jukebox();
         this.core = {
@@ -415,7 +449,7 @@ class Engine {
     }
 
     tick() {
-        this.display.refresh();
+        this.display.clear();
         this.input.poll(this.display.canvas);
 
         var current_state = this.states[0];

@@ -893,6 +893,7 @@ class Engine {
 
         this.states = [initial_state];
         initial_state.on_entry(this.core);
+        this.input.poll(this.display.canvas);
     }
 
     /**
@@ -900,7 +901,6 @@ class Engine {
      */
     tick() {
         this.display.clear();
-        this.input.poll(this.display.canvas);
 
         var current_state = this.states[0];
         var next = current_state.next;

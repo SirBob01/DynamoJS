@@ -1,4 +1,5 @@
-// Utility functions
+/**   Utility functions   **/
+
 /**
  * Linearly interpolate between two values.
  * 
@@ -23,7 +24,8 @@ function clamp(x, min, max) {
     return Math.min(x, Math.max(x, min));
 }
 
-// Utility classes
+/**   Utility classes   **/
+
 class Color {
     /**
      * A wrapper for rgba values.
@@ -170,6 +172,15 @@ class Vec2D {
     }
 
     /**
+     * Test if a vector is equivalent to the current one.
+     * @param  {Vec2D}   b Other vector
+     * @return {Boolean}   Are the vectors equal?
+     */
+    equals(b) {
+        return this.x == b.x && this.y == b.y;
+    }
+
+    /**
      * Add a new vector to the current one.
      * 
      * @param  {Vec2D} b Addend vector
@@ -228,6 +239,42 @@ class Vec2D {
 }
 
 
+class Segment {
+    /**
+     * A line segment.
+     * 
+     * @param  {Vec2D}   start Coordinates of the starting point
+     * @param  {Vec2D}   stop  Coordinates of the stopping point
+     * @return {Segment}       New Segment object
+     */
+    constructor(start, stop) {
+        this.start = start;
+        this.stop = stop;
+    }
+
+    /**
+     * Create a copy of the current segment.
+     * 
+     * @return {Segment} New Segment object
+     */
+    copy() {
+        return new Segment(this.start, this.stop);
+    }
+
+    /**
+     * Test if the current segment is parallel with another.
+     * 
+     * @param  {Segment}  segment The other segment to test
+     * @return {Boolean}          Are the segments parallel?
+     */
+    is_parallel(segment) {
+        m1 = (this.stop.y - this.start.y) / (this.stop.x - this.start.x);
+        m2 = (segment.stop.y - segment.start.y) / (segment.stop.x - segment.start.x);
+        return m1 == m2;
+    }
+}
+
+
 class AABB {
     /**
      * An axis-aligned bounding box.
@@ -273,6 +320,54 @@ class AABB {
         return this.center.add(this.dim.scale(0.5));
     }
 
+    /**
+     * Get the left side of the AABB.
+     * 
+     * @return {Segment} Line segment of the left face
+     */
+    left() {
+        var tl = this.min();
+        var bl = this.max();
+        bl.x -= this.dim.x;
+        return new Segment(tl, bl);
+    }
+
+    /**
+     * Get the right side of the AABB.
+     * 
+     * @return {Vec2D} Line segment of the right face
+     */
+    right() {
+        var tr = this.min();
+        var br = this.max();
+        tr.x += this.dim.x;
+        return new Segment(tr, br);
+    }
+    
+    /**
+     * Get the top side of the AABB.
+     * 
+     * @return {Vec2D} Line segment of the top face
+     */
+    top() {
+        var tl = this.min();
+        var tr = this.min();
+        tr.x += this.dim.x;
+        return new Segment(tl, tr);
+    }
+
+    /**
+     * Get the bottom side of the AABB.
+     * 
+     * @return {Vec2D} Line segment of the bottom face
+     */
+    bottom() {
+        var bl = this.max();
+        var br = this.max();
+        bl.x -= this.dim.x;
+        return new Segment(bl, br);
+    }
+    
     /**
      * Test if a point is within the AABB.
      * 
@@ -387,8 +482,8 @@ class Sprite {
     }
 }
 
+/**   Core modules   **/
 
-// Core Modules
 class Surface {
     /**
      * A base surface for targeted rendering.

@@ -211,6 +211,15 @@ class Vec2D {
     }
 
     /**
+     * Calculate the dot product with another vector.
+     * @param  {Vec2D}  b Other vector
+     * @return {Number}   Resultant dot product
+     */
+    dot(b) {
+        return this.x * b.x + this.y * b.y;
+    }
+
+    /**
      * Get the squared length of the vector.
      * 
      * @return {Number} Squared length

@@ -422,7 +422,7 @@ class Sprite {
      * @param  {Number} nframes Maximum number of frames
      * @return {Sprite}         New Sprite object
      */
-    constructor(file, frame_x=0, frame_y=0, nframes=0) {
+    constructor(file, frame_x=0, frame_y=0, nframes=0, callback=null) {
         this.img = new Image();
         this.img.src = file;
 
@@ -437,7 +437,7 @@ class Sprite {
         this.flip = new Vec2D(1, 1);
         this.opacity = 1.0;
 
-        // Synchronize resource loading
+        // TODO: Synchronize image loading... pain in the ass
         var _this = this;
         this.img.onload = function() {
             if(frame_x == 0 || frame_y == 0) {
@@ -462,6 +462,13 @@ class Sprite {
                     ));
                 }
             }
+            // Workaround for asynchronous load
+            if(callback) {
+                callback(_this);            
+            }
+        }
+        this.img.onerror = function() {
+            throw "Could not load image file "+file;
         }
     }
 
@@ -516,16 +523,48 @@ class Surface {
 
     /**
      * Get the bounds of the surface.
-     * 
-     * @return {AABB} Bouding box of the surface
+     *
+     * @param  {Boolean} center Should bounding box be centered?
+     * @return {AABB}           Bouding box of the surface
      */
-    rect() {
-        return new AABB(
+    rect(center=true) {
+        var aabb = new AABB(
             this.canvas.width/2.0,
             this.canvas.height/2.0,
             this.canvas.width,
             this.canvas.height
-        )
+        );
+        if(!center) {
+            aabb.center.x = 0
+            aabb.center.y = 0;
+        }
+        return aabb;
+    }
+
+    /**
+     * Generate a subsurface.
+     * 
+     * @param  {AABB}    aabb    Size and location of subsurface
+     * @param  {Boolean} center  Should coordinates be centered?
+     * @return {Surface}         New Surface object
+     */
+    subsurface(aabb, center=false) {
+        var sub = new Surface(aabb.dim.x, aabb.dim.y);
+        var target;
+        if(center) {
+            target = aabb.min();
+        }
+        else {
+            target = aabb.center;
+        }
+        sub.surface.drawImage(
+            this.canvas,
+            target.x, target.y,
+            aabb.dim.x, aabb.dim.y,
+            0, 0,
+            aabb.dim.x, aabb.dim.y
+        );
+        return sub;
     }
 
     /**
@@ -543,13 +582,20 @@ class Surface {
      * @param  {Surface} src    Source surface to be drawn
      * @param  {AABB}    aabb   Target bounding box for stretching
      * @param  {String}  blend  Drawing blend mode
+     * @param  {Boolean} center Should drawing be centered?
      */
-    draw_surface(src, aabb, blend="source-over") {
+    draw_surface(src, aabb, blend="source-over", center=true) {
         this.surface.globalCompositeOperation = blend;
-        var upperleft = aabb.min();
+        var target;
+        if(center) {
+            target = aabb.min();
+        } 
+        else {
+            target = aabb.center;
+        }
         this.surface.drawImage(
             src.canvas, 
-            upperleft.x, upperleft.y,
+            target.x, target.y,
             aabb.dim.x, aabb.dim.y
         );
         this.surface.globalCompositeOperation = "source-over";
@@ -558,11 +604,17 @@ class Surface {
     /**
      * Draw a sprite on the surface.
      * 
-     * @param  {Sprite} sprite Source sprite to be drawn
-     * @param  {AABB}   aabb   Target bounding box for stretching
-     * @param  {String} blend  Drawing blend mode
+     * @param  {Sprite}  sprite Source sprite to be drawn
+     * @param  {AABB}    aabb   Target bounding box for stretching
+     * @param  {String}  blend  Drawing blend mode
+     * @param  {Boolean} center Should drawing be centered?
      */
-    draw_sprite(sprite, aabb, blend="source-over") {
+    draw_sprite(sprite, aabb, blend="source-over", center=true) {
+        if(sprite.frames.length == 0) {
+            // Assumes that the sprite will *eventually* load
+            // Unless Sprite could not load image of course...
+            return;
+        }
         this.surface.globalAlpha = sprite.opacity;
         this.surface.globalCompositeOperation = blend;
         this.surface.imageSmoothingEnabled = false;
@@ -571,8 +623,14 @@ class Surface {
         var frame = sprite.frames[sprite.current_frame];
         if(aabb.dim.x && aabb.dim.y) {
             var point = aabb.center.copy();
-            point.x -= aabb.dim.x * 0.5 * sprite.flip.x;
-            point.y -= aabb.dim.y * 0.5 * sprite.flip.y;
+            if(center) {
+                point.x -= aabb.dim.x * 0.5 * sprite.flip.x;
+                point.y -= aabb.dim.y * 0.5 * sprite.flip.y;
+            }
+            else {
+                point.x *= sprite.flip.x;
+                point.y *= sprite.flip.y;
+            }
             this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
@@ -583,8 +641,14 @@ class Surface {
         }
         else {
             var point = aabb.center.copy();
-            point.x -= sprite.size.x * 0.5 * sprite.flip.x;
-            point.y -= sprite.size.y * 0.5 * sprite.flip.y;
+            if(center) {
+                point.x -= sprite.size.x * 0.5 * sprite.flip.x;
+                point.y -= sprite.size.y * 0.5 * sprite.flip.y;
+            }
+            else {
+                point.x *= sprite.flip.x;
+                point.y *= sprite.flip.y;
+            }
             this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
@@ -606,17 +670,23 @@ class Surface {
      * @param  {Boolean} fill      Should the shape be filled?
      * @param  {Number}  linewidth Width of the outline
      * @param  {String}  blend     Drawing blend mode
+     * @param  {Boolean} center    Should drawing be centered?
      */
-    draw_rect(aabb, color, fill=false, linewidth=1, blend="source-over") {
+    draw_rect(aabb, color, fill=false, linewidth=1, blend="source-over", center=true) {
         this.surface.globalAlpha = color.alpha();
         this.surface.globalCompositeOperation = blend;
         
-        // Offset drawing so it is centered
-        var upperleft = aabb.min();
+        var target;
+        if(center) {
+            target = aabb.min();
+        }
+        else {
+            target = aabb.center;
+        }
         if(fill) {
             this.surface.fillStyle = color.get();
             this.surface.fillRect(
-                upperleft.x, upperleft.y, 
+                target.x, target.y, 
                 aabb.dim.x, aabb.dim.y
             );
         }
@@ -624,7 +694,7 @@ class Surface {
             this.surface.lineWidth = linewidth;
             this.surface.strokeStyle = color.get();
             this.surface.strokeRect(
-                upperleft.x, upperleft.y,
+                target.x, target.y,
                 aabb.dim.x, aabb.dim.y
             );
         }

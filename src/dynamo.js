@@ -519,6 +519,9 @@ class Surface {
             this.canvas = canvas;
         }
         this.surface = this.canvas.getContext("2d");
+
+        // TODO: Why the fuck does this work? Figure this out soon pls.
+        this.surface.imageSmoothingEnabled = false; 
     }
 
     /**
@@ -617,7 +620,6 @@ class Surface {
         }
         this.surface.globalAlpha = sprite.opacity;
         this.surface.globalCompositeOperation = blend;
-        this.surface.imageSmoothingEnabled = false;
         this.surface.scale(sprite.flip.x, sprite.flip.y);
 
         var frame = sprite.frames[sprite.current_frame];

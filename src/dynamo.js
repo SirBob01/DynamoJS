@@ -21,7 +21,7 @@ function lerp(a, b, t) {
  * @return {Number}         Clamped value
  */
 function clamp(x, min, max) {
-    return Math.min(x, Math.max(x, min));
+    return Math.min(max, Math.max(x, min));
 }
 
 /**   Utility classes   **/

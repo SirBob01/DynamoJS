@@ -959,7 +959,8 @@ class Engine {
             audio : new Jukebox(),
             input : new Input(),
             clock : {
-                dt : 0
+                dt : 0,
+                dt_cap : 100 // Protect integration from breaking
             }
         };
 
@@ -998,7 +999,9 @@ class Engine {
         var _this = this;
         var last_time = 0;
         var f = function(elapsed) {
-            _this.core.clock.dt = elapsed - last_time;
+            _this.core.clock.dt = clamp(
+                elapsed - last_time, 0, _this.core.clock.dt_cap
+            );
             last_time = elapsed;
             _this.tick();
             window.requestAnimationFrame(f);

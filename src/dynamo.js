@@ -951,28 +951,28 @@ class Engine {
      * @return {Engine}                  New Engine object
      */
     constructor(initial_state) {
-        this.display = new Surface(
-            0, 0,
-            document.getElementById("display")
-        );
-        this.input = new Input();
-        this.audio = new Jukebox();
         this.core = {
-            display : this.display,
-            audio : this.audio,
-            input : this.input
+            display : new Surface(
+                0, 0, 
+                document.getElementById("display")
+            ),
+            audio : new Jukebox(),
+            input : new Input(),
+            clock : {
+                dt : 0
+            }
         };
 
         this.states = [initial_state];
         initial_state.on_entry(this.core);
-        this.input.poll(this.display.canvas);
+        this.core.input.poll(this.core.display.canvas);
     }
 
     /**
      * Update the game state.
      */
     tick() {
-        this.display.clear();
+        this.core.display.clear();
 
         var current_state = this.states[0];
         var next = current_state.next;
@@ -996,8 +996,13 @@ class Engine {
      */
     run() {
         var _this = this;
-        setInterval(function () {
+        var last_time = 0;
+        var f = function(elapsed) {
+            _this.core.clock.dt = elapsed - last_time;
+            last_time = elapsed;
             _this.tick();
-        }, (1.0/60.0) * 1000.0);
+            window.requestAnimationFrame(f);
+        }
+        window.requestAnimationFrame(f);
     }
 }

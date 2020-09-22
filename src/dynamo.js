@@ -212,6 +212,7 @@ class Vec2D {
 
     /**
      * Calculate the dot product with another vector.
+     * 
      * @param  {Vec2D}  b Other vector
      * @return {Number}   Resultant dot product
      */
@@ -235,6 +236,16 @@ class Vec2D {
      */
     length() {
         return Math.sqrt(this.length_sq());
+    }
+
+    /**
+     * Get the unit vector.
+     * 
+     * @return {Vec2D} Directional vector of length 1.
+     */
+    unit() {
+        var length = this.length();
+        return new Vec2D(this.x / length, this.y / length);
     }
 
     /**

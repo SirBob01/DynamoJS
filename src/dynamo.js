@@ -73,7 +73,12 @@ class Color {
      * @return {String} RGBA string
      */
     get() {
-        return "rgb("+this.r+","+this.g+","+this.b+")";
+        return "rgb("+
+            clamp(Math.round(this.r), 0, 255)+","+
+            clamp(Math.round(this.g), 0, 255)+","+
+            clamp(Math.round(this.b), 0, 255)+","+
+            clamp(Math.round(this.a), 0, 255)+
+        ")";
     }
 
     /**
@@ -288,8 +293,8 @@ class Segment {
      * @return {Boolean}          Are the segments parallel?
      */
     is_parallel(segment) {
-        m1 = (this.stop.y - this.start.y) / (this.stop.x - this.start.x);
-        m2 = (segment.stop.y - segment.start.y) / (segment.stop.x - segment.start.x);
+        var m1 = (this.stop.y - this.start.y) / (this.stop.x - this.start.x);
+        var m2 = (segment.stop.y - segment.start.y) / (segment.stop.x - segment.start.x);
         return m1 == m2;
     }
 }
@@ -730,6 +735,38 @@ class Surface {
         this.surface.globalCompositeOperation = blend;
         this.surface.beginPath();
         this.surface.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+        if(fill) {
+            this.surface.fillStyle = color.get();
+            this.surface.fill();
+        }
+        else {
+            this.surface.lineWidth = linewidth;
+            this.surface.strokeStyle = color.get();
+            this.surface.stroke();
+        }
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
+    }
+
+    /**
+     * Draw a polygon from a sorted list of points
+     * 
+     * @param  {Array}   points    Sorted array of Vec2D points
+     * @param  {Color}   color     Target color or gradient
+     * @param  {Boolean} fill      Should the shape be filled?
+     * @param  {Number}  linewidth Width of the outline
+     * @param  {String}  blend     Drawing blend mode
+     */
+    draw_polygon(points, color, fill=false, linewidth=1, blend="source_over") {
+        this.surface.globalAlpha = color.alpha();
+        this.surface.globalCompositeOperation = blend;
+        this.surface.beginPath();
+        
+        this.surface.moveTo(points[0].x, points[0].y);
+        for(var i = 1; i < points.length; i++) {
+            var p = points[i];
+            this.surface.lineTo(p.x, p.y);
+        }
         if(fill) {
             this.surface.fillStyle = color.get();
             this.surface.fill();

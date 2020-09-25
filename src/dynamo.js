@@ -981,7 +981,7 @@ class GameState {
 
     /**
      * Update the state at every frame. This can be overriden.
-     * This is called only once in its lifetime.
+     * This is called throughout its lifetime.
      * 
      * @param  {Object} core Core modules passed by Engine
      */

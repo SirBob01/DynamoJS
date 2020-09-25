@@ -938,14 +938,15 @@ class Input {
 
 class GameState {
     /**
-     * A game state. This is where user defined
-     * logic is implemented.
+     * A game state. User logic should be implemented 
+     * in a class that inherits from GameState.
      * 
      * @return {GameState} New GameState object
      */
     constructor() {
         this.next = null;
         this.kill = false;
+        this.transition = false;
     }
 
     /**
@@ -954,9 +955,10 @@ class GameState {
      * @param {GameState} next GameState after transitioning
      * @param {Boolean}   kill Should the current state be killed?
      */
-    set_next(next, kill) {
+    set_next(next=null, kill=true) {
         this.next = next;
         this.kill = kill;
+        this.transition = true;
     }
 
     /**
@@ -1023,16 +1025,21 @@ class Engine {
     tick() {
         this.core.display.clear();
 
-        var current_state = this.states[0];
+        var current_state = this.states[this.states.length-1];
         var next = current_state.next;
 
-        if(next != null) {
+        if(current_state.transition) {
             if(current_state.kill) {
                 current_state.on_exit(this.core);
                 this.states.pop();
             }
-            next.on_entry(this.core);
-            this.states.push(next);
+            else {
+                current_state.transition = false;
+            }
+            if(next) {
+                next.on_entry(this.core);
+                this.states.push(next);
+            }
         }
         else {
             current_state.update(this.core);

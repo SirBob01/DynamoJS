@@ -909,13 +909,15 @@ class Input {
      */
     constructor() {
         this.state = {};
+        this.pressed = {};
+        this.released = {};
         this.mouse = new Vec2D(0, 0);
     }
 
     /**
      * Get the state of an input.
      * Alphanumeric keys range from a - z, 0 - 9.
-     * Mouse buttons range from Mouse0 - Mouse2.
+     * Mouse buttons range from Mouse1 - Mouse3.
      * 
      * @param  {String} key  Target input to be tested
      * @return {Boolean}     Is the input pressed or released?
@@ -923,6 +925,36 @@ class Input {
     get_state(key) {
         if(key in this.state) {
             return this.state[key];
+        }
+        return false;
+    }
+
+    /**
+     * Check if input is pressed on the current frame.
+     * Alphanumeric keys range from a - z, 0 - 9.
+     * Mouse buttons range from Mouse1 - Mouse3.
+     * 
+     * @param  {String} key  Target input to be tested
+     * @return {Boolean}     Is the input pressed this frame?
+     */
+    get_pressed(key) {
+        if(key in this.pressed) {
+            return this.pressed[key];
+        }
+        return false;
+    }
+
+    /**
+     * Check if input is released on the current frame.
+     * Alphanumeric keys range from a - z, 0 - 9.
+     * Mouse buttons range from Mouse1 - Mouse3.
+     * 
+     * @param  {String} key  Target input to be tested
+     * @return {Boolean}     Is the input released this frame?
+     */
+    get_released(key) {
+        if(key in this.released) {
+            return this.released[key];
         }
         return false;
     }
@@ -936,15 +968,21 @@ class Input {
         var _this = this;
         document.addEventListener('keydown', function(event) {
             _this.state[event.key] = true;
+            _this.pressed[event.key] = true;
         });
         document.addEventListener('keyup', function(event) {
             _this.state[event.key] = false;
+            _this.released[event.key] = true;
         });
         document.addEventListener('mousedown', function(event) {
-            _this.state["Mouse"+event.which] = true;
+            var key = "Mouse"+event.which;
+            _this.state[key] = true;
+            _this.pressed[key] = true;
         });
         document.addEventListener('mouseup', function(event) {
-            _this.state["Mouse"+event.which] = false;
+            var key = "Mouse"+event.which;
+            _this.state[key] = false;
+            _this.released[key] = true;
         });
         document.addEventListener('mousemove', function(event) {
             var rect = canvas.getBoundingClientRect();
@@ -954,6 +992,18 @@ class Input {
             _this.mouse.x = (event.clientX - rect.left) * scaleX;
             _this.mouse.y = (event.clientY - rect.top) * scaleY;
         });
+    }
+
+    /**
+     * Reset the pressed and released values
+     */
+    refresh() {
+        for(var key in this.pressed) {
+            this.pressed[key] = false;
+        }
+        for(var key in this.released) {
+            this.released[key] = false;
+        }
     }
 }
 
@@ -1066,6 +1116,7 @@ class Engine {
         else {
             current_state.update(this.core);
         }
+        this.core.input.refresh();
     }
 
     /**

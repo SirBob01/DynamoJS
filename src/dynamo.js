@@ -992,10 +992,15 @@ class Input {
             _this.mouse.x = (event.clientX - rect.left) * scaleX;
             _this.mouse.y = (event.clientY - rect.top) * scaleY;
         });
+
+        // Prevent opening menu when right-clicking the canvas
+        canvas.addEventListener("contextmenu", function(event) {
+            event.preventDefault();
+        }, false);
     }
 
     /**
-     * Reset the pressed and released values
+     * Reset the pressed and released values.
      */
     refresh() {
         for(var key in this.pressed) {

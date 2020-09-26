@@ -681,6 +681,28 @@ class Surface {
     }
 
     /**
+     * Draw a line segment on the surface.
+     * 
+     * @param  {[type]} segment   Start and end points of the line
+     * @param  {[type]} color     Target color or gradient
+     * @param  {Number} linewidth Width of the line
+     * @param  {String} blend     Drawing blend mode
+     */
+    draw_line(segment, color, linewidth=1, blend="source-over") {
+        this.surface.globalAlpha = color.alpha();
+        this.surface.globalCompositeOperation = blend;
+        this.surface.strokeStyle = color.get();
+
+        this.surface.beginPath();
+        this.surface.moveTo(segment.start.x, segment.start.y);
+        this.surface.lineTo(segment.stop.x, segment.stop.y);
+        this.surface.stroke();
+        
+        this.surface.globalAlpha = 1.0;
+        this.surface.globalCompositeOperation = "source-over";
+    }
+
+    /**
      * Draw a rectangular shape on the surface.
      * 
      * @param  {AABB}    aabb      Target bounding box

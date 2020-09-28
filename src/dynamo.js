@@ -470,8 +470,8 @@ class Sprite {
             }
 
             // Calculate individual frame coordinates
-            for(var i = 0; i < hor_frames; i++) {
-                for(var j = 0; j < ver_frames; j++) {
+            for(var j = 0; j < ver_frames; j++) {
+                for(var i = 0; i < hor_frames; i++) {
                     _this.frames.push(new Vec2D(
                         i*_this.size.x, 
                         j*_this.size.y
@@ -836,7 +836,6 @@ class Surface {
 }
 
 
-// TODO: Add stream for layering tracks
 class Jukebox {
     /**
      * The audio engine.
@@ -846,9 +845,11 @@ class Jukebox {
     constructor() {
         this.context = new AudioContext();
         this.volume = 1.0;
+        this.max_distance = 1000;
 
         // id : bytestream
         this.sounds = {};
+        this.streams = {};
     }
     
     /**
@@ -857,7 +858,7 @@ class Jukebox {
      * @param  {String} url Valid URL to an audio file
      * @param  {String} id  Key value for mapping
      */
-    load_sound(url, id) {
+    load_sound(url) {
         var _this = this;
         var request = new XMLHttpRequest();
         request.responseType = 'arraybuffer';
@@ -865,10 +866,10 @@ class Jukebox {
             if(request.status == 200 && request.readyState == 4) {
                 _this.context.decodeAudioData(request.response, 
                     function(buffer) {
-                        _this.sounds[id] = buffer;
+                        _this.sounds[url] = buffer;
                     },
                     function(e) {
-                        console.log("Error decoding "+url+": "+e.err);
+                        throw "Error decoding "+url+": "+e.err;
                     });
             }
         };
@@ -879,24 +880,189 @@ class Jukebox {
     /**
      * Play a sound effect.
      * 
-     * @param  {String} id     Valid mapped key value
-     * @param  {Number} volume Volume of sound between [0, 1]
+     * @param  {String} url      Valid URL to an audio file
+     * @param  {Number} volume   Volume of sound between [0, 1]
+     * @param  {Vec2D}  position Location of the sound relative to origin
      */
-    play_sound(id, volume) {
-        if(!(id in this.sounds)) {
-            throw id+" sound is not loaded into Jukebox.";
+    play_sound(url, volume, position) {
+        if(!(url in this.sounds)) {
+            this.load_sound(url);
         }
         var source_node = this.context.createBufferSource();
         var gain_node = this.context.createGain();
+        var panner_node = this.context.createPanner();
 
-        source_node.connect(gain_node);
+        source_node.connect(panner_node);
+        panner_node.connect(gain_node)
         gain_node.connect(this.context.destination);
         
         // Set initial values
-        source_node.buffer = this.sounds[id];
+        source_node.buffer = this.sounds[url];
+
+        panner_node.panningModel = "equalpower";
+        panner_node.distanceModel = "linear";
+        panner_node.refDistance = 1;
+        panner_node.maxDistance = this.max_distance;
+        panner_node.rolloffFactor = 1;
+        panner_node.coneInnerAngle = 360;
+        panner_node.coneOuterAngle = 0;
+        panner_node.coneOuterGain = 0;
+
+        panner_node.positionX.setValueAtTime(position.x, this.context.currentTime);
+        panner_node.positionY.setValueAtTime(position.y, this.context.currentTime);
+
         gain_node.gain.value = volume * this.volume;
 
         source_node.start(0);
+    }
+
+    /**
+     * Create a new audio stream.
+     * 
+     * @param  {String} stream Name of the stream
+     */
+    create_stream(stream) {
+        this.streams[stream] = {
+            max_volume : 1.0,
+            volume : 1.0,
+            tracks : [],
+            is_playing : true
+        };
+    }
+
+    /**
+     * Queue a new track onto the stream.
+     * 
+     * @param  {String} stream   Name of the stream
+     * @param  {String} url      Valid URL to an audio file
+     * @param  {Number} volume   Volume of sound between [0, 1]
+     * @param  {Number} fadein   Fade in time in seconds
+     * @param  {Number} loops    Number of repetitions (-1 for infinite)
+     * @param  {Vec2D}  position Location of the sound relative to origin
+     * @return {Object}          User-accessible track information
+     */
+    queue_stream(stream, url, volume, fadein, loops, position) {
+        if(!(stream in this.streams)) {
+            throw '"'+stream+'" audio stream does not exist.';
+        }
+        var media_elem = new Audio();
+        var track = {
+            media : media_elem,
+            loops : loops,
+            start : false,
+            skipped : false,
+
+            source_node : this.context.createMediaElementSource(media_elem),
+            panner_node : this.context.createPanner(),
+            gain_node : this.context.createGain(),
+
+            user_inf : {
+                volume : volume,
+                position : position
+            }
+        };
+        media_elem.src = url;
+        media_elem.crossOrigin = "anonymous";
+        
+        // Set node values
+        track.panner_node.panningModel = "equalpower"; // HRTF or equalpower? Which sounds better?
+        track.panner_node.distanceModel = "linear";
+        track.panner_node.refDistance = 1;
+        track.panner_node.maxDistance = this.max_distance;
+        track.panner_node.rolloffFactor = 1;
+        track.panner_node.coneInnerAngle = 360;
+        track.panner_node.coneOuterAngle = 0;
+        track.panner_node.coneOuterGain = 0;
+
+        // Set fade effects
+        track.gain_node.gain.value = 0;
+        track.gain_node.gain.linearRampToValueAtTime(
+            track.user_inf.volume * this.volume,
+            this.context.currentTime + fadein
+        );
+
+        // Connect audio nodes
+        track.source_node.connect(track.panner_node);
+        track.panner_node.connect(track.gain_node);
+        track.gain_node.connect(this.context.destination);
+
+        this.streams[stream].tracks.push(track);
+        return track.user_inf;
+    }
+
+    /**
+     * Skip the current track on a stream.
+     * 
+     * @param  {String} stream  Name of the stream
+     * @param  {Number} fadeout Fade out time in seconds
+     */
+    skip_stream(stream, fadeout) {
+        if(!(stream in this.streams)) {
+            throw '"'+stream+'" audio stream does not exist.';
+        }
+        var s = this.streams[stream];
+        if(s.tracks.length == 0) {
+            return;
+        }
+        var current = s.tracks[0];
+        current.skipped = true;
+
+        // Cancel any occurring fades
+        var gain_now = current.gain_node.gain.value;
+        current.gain_node.gain.cancelScheduledValues(this.context.currentTime);
+        current.gain_node.gain.value = gain_now;
+
+        // Fade out
+        current.gain_node.gain.linearRampToValueAtTime(
+            0,
+            this.context.currentTime + fadeout 
+        );
+    }
+
+    /**
+     * Update all streams.
+     */
+    update() {
+        for(var s in this.streams) {
+            var stream = this.streams[s];
+            if(stream.tracks.length == 0) {
+                continue;
+            }
+            var current = stream.tracks[0];
+
+            // Keep track of position
+            current.panner_node.positionX.setValueAtTime(
+                current.user_inf.position.x, 
+                this.context.currentTime
+            );
+            current.panner_node.positionY.setValueAtTime(
+                current.user_inf.position.y, 
+                this.context.currentTime
+            );
+
+            // Handle starting
+            if(!current.start) {
+                current.media.play();
+                current.start = true;
+            }
+
+            // Handle skipping
+            if(current.skipped && current.gain_node.gain.value == 0) {
+                current.media.pause();
+                stream.tracks.shift();
+            }
+
+            // Handle ending
+            if(current.media.ended) {
+                current.start = false;
+                if(current.loops != 0) {
+                    current.loops--;
+                }
+                else {
+                    stream.tracks.shift();
+                }
+            }
+        }
     }
 }
 
@@ -1121,6 +1287,7 @@ class Engine {
         else {
             current_state.update(this.core);
         }
+        this.core.audio.update();
         this.core.input.refresh();
     }
 

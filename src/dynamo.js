@@ -909,7 +909,7 @@ class Jukebox {
         panner_node.coneOuterGain = 0;
 
         panner_node.positionX.setValueAtTime(position.x, this.context.currentTime);
-        panner_node.positionY.setValueAtTime(position.y, this.context.currentTime);
+        panner_node.positionZ.setValueAtTime(position.y, this.context.currentTime);
 
         gain_node.gain.value = volume * this.volume;
 
@@ -966,7 +966,7 @@ class Jukebox {
         media_elem.crossOrigin = "anonymous";
         
         // Set node values
-        track.panner_node.panningModel = "equalpower"; // HRTF or equalpower? Which sounds better?
+        track.panner_node.panningModel = "equalpower";
         track.panner_node.distanceModel = "linear";
         track.panner_node.refDistance = 1;
         track.panner_node.maxDistance = this.max_distance;
@@ -1043,7 +1043,7 @@ class Jukebox {
                 current.user_inf.position.x, 
                 this.context.currentTime
             );
-            current.panner_node.positionY.setValueAtTime(
+            current.panner_node.positionZ.setValueAtTime(
                 current.user_inf.position.y, 
                 this.context.currentTime
             );

@@ -949,6 +949,7 @@ class Jukebox {
         var track = {
             media : media_elem,
             loops : loops,
+            fadein : fadein,
             start : false,
             skipped : false,
 
@@ -973,13 +974,6 @@ class Jukebox {
         track.panner_node.coneInnerAngle = 360;
         track.panner_node.coneOuterAngle = 0;
         track.panner_node.coneOuterGain = 0;
-
-        // Set fade effects
-        track.gain_node.gain.value = 0;
-        track.gain_node.gain.linearRampToValueAtTime(
-            track.user_inf.volume * this.volume,
-            this.context.currentTime + fadein
-        );
 
         // Connect audio nodes
         track.source_node.connect(track.panner_node);
@@ -1056,6 +1050,12 @@ class Jukebox {
 
             // Handle starting
             if(!current.start) {
+                // Set fade effects
+                current.gain_node.gain.value = 0;
+                current.gain_node.gain.linearRampToValueAtTime(
+                    current.user_inf.volume * this.volume,
+                    this.context.currentTime + current.fadein
+                );
                 current.media.play();
                 current.start = true;
             }

@@ -996,7 +996,7 @@ class Jukebox {
      * @param  {String} stream  Name of the stream
      * @param  {Number} fadeout Fade out time in seconds
      */
-    skip_stream(stream, fadeout) {
+    skip_stream(stream, fadeout=0) {
         if(!(stream in this.streams)) {
             throw '"'+stream+'" audio stream does not exist.';
         }
@@ -1017,6 +1017,20 @@ class Jukebox {
             0,
             this.context.currentTime + fadeout 
         );
+    }
+
+    /**
+     * Clear all tracks on the stream.
+     * 
+     * @param  {String} stream  Name of the stream
+     * @param  {Number} fadeout Fade out time in seconds
+     */
+    clear_stream(stream, fadeout=0) {
+        if(!(stream in this.streams)) {
+            throw '"'+stream+'" audio stream does not exist.';
+        }
+        this.skip_stream(stream, fadeout);
+        this.streams[stream].tracks = [];
     }
 
     /**

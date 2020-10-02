@@ -24,6 +24,17 @@ function clamp(x, min, max) {
     return Math.min(max, Math.max(x, min));
 }
 
+/**
+ * Generate a random floating point number in [min, max)
+ * 
+ * @param  {Number} min Minimum value of range
+ * @param  {Number} max Maximum value of range
+ * @return {Number}     Random number
+ */
+function randrange(min, max) {
+    return min + ((max - min) * Math.random());
+}
+
 /**   Utility classes   **/
 
 class Color {
@@ -449,10 +460,6 @@ class Sprite {
         this.finished = false;
         this.max_frames = nframes;
 
-        // Drawing properties
-        this.flip = new Vec2D(1, 1);
-        this.opacity = 1.0;
-
         // TODO: Synchronize image loading... pain in the ass
         var _this = this;
         this.img.onload = function() {
@@ -598,80 +605,91 @@ class Surface {
     /**
      * Draw another surface on top of the current one.
      * 
-     * @param  {Surface} src    Source surface to be drawn
-     * @param  {AABB}    aabb   Target bounding box for stretching
-     * @param  {String}  blend  Drawing blend mode
-     * @param  {Boolean} center Should drawing be centered?
+     * @param  {Surface} src     Source surface to be drawn
+     * @param  {AABB}    aabb    Target bounding box for stretching
+     * @param  {String}  blend   Drawing blend mode
+     * @param  {Number}  opacity Transparency value
+     * @param  {Vec2D}   flip    Flip factor of the image
+     * @param  {Boolean} center  Should drawing be centered?
      */
-    draw_surface(src, aabb, blend="source-over", center=true) {
+    draw_surface(src, aabb, blend="source-over", opacity=1.0, flip=new Vec2D(1, 1), center=true) {
         this.surface.globalCompositeOperation = blend;
-        var target;
+        this.surface.globalAlpha = opacity;
+        this.surface.scale(flip.x, flip.y);
+
+        var point = aabb.center.copy();
         if(center) {
-            target = aabb.min();
-        } 
+            point.x -= aabb.dim.x * 0.5 * flip.x;
+            point.y -= aabb.dim.y * 0.5 * flip.y;
+        }
         else {
-            target = aabb.center;
+            point.x *= flip.x;
+            point.y *= flip.y;
         }
         this.surface.drawImage(
-            src.canvas, 
-            target.x, target.y,
+            src.canvas,
+            point.x * flip.x, point.y * flip.y,
             aabb.dim.x, aabb.dim.y
         );
+        this.surface.setTransform(1, 0, 0, 1, 0, 0);
+        this.surface.globalAlpha = 1.0;
         this.surface.globalCompositeOperation = "source-over";
     }
 
     /**
      * Draw a sprite on the surface.
      * 
-     * @param  {Sprite}  sprite Source sprite to be drawn
-     * @param  {AABB}    aabb   Target bounding box for stretching
-     * @param  {String}  blend  Drawing blend mode
-     * @param  {Boolean} center Should drawing be centered?
+     * @param  {Sprite}  sprite  Source sprite to be drawn
+     * @param  {AABB}    aabb    Target bounding box for stretching
+     * @param  {String}  blend   Drawing blend mode
+     * @param  {Number}  opacity Transparency value
+     * @param  {Vec2D}   flip    Flip factor of the image
+     * @param  {Boolean} center  Should drawing be centered?
      */
-    draw_sprite(sprite, aabb, blend="source-over", center=true) {
+    draw_sprite(sprite, aabb, blend="source-over", opacity=1.0, flip=new Vec2D(1, 1), center=true) {
         if(sprite.frames.length == 0) {
             // Assumes that the sprite will *eventually* load
             // Unless Sprite could not load image of course...
             return;
         }
-        this.surface.globalAlpha = sprite.opacity;
+        this.surface.globalAlpha = opacity;
         this.surface.globalCompositeOperation = blend;
-        this.surface.scale(sprite.flip.x, sprite.flip.y);
+        this.surface.scale(flip.x, flip.y);
 
         var frame = sprite.frames[sprite.current_frame];
         if(aabb.dim.x && aabb.dim.y) {
             var point = aabb.center.copy();
             if(center) {
-                point.x -= aabb.dim.x * 0.5 * sprite.flip.x;
-                point.y -= aabb.dim.y * 0.5 * sprite.flip.y;
+                point.x -= aabb.dim.x * 0.5 * flip.x;
+                point.y -= aabb.dim.y * 0.5 * flip.y;
             }
             else {
-                point.x *= sprite.flip.x;
-                point.y *= sprite.flip.y;
+                point.x *= flip.x;
+                point.y *= flip.y;
             }
             this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
-                point.x * sprite.flip.x, point.y * sprite.flip.y,
+                point.x * flip.x, point.y * flip.y,
                 aabb.dim.x, aabb.dim.y
             );
         }
         else {
             var point = aabb.center.copy();
             if(center) {
-                point.x -= sprite.size.x * 0.5 * sprite.flip.x;
-                point.y -= sprite.size.y * 0.5 * sprite.flip.y;
+                point.x -= sprite.size.x * 0.5 * flip.x;
+                point.y -= sprite.size.y * 0.5 * flip.y;
             }
             else {
-                point.x *= sprite.flip.x;
-                point.y *= sprite.flip.y;
+                point.x *= flip.x;
+                point.y *= flip.y;
             }
             this.surface.drawImage(
                 sprite.img,
                 frame.x, frame.y,
                 sprite.size.x, sprite.size.y,
-                point.x * sprite.flip.x, point.y * sprite.flip.y,
+                point.x * flip.x, point.y * flip.y,
                 sprite.size.x, sprite.size.y
             );
         }
@@ -683,10 +701,10 @@ class Surface {
     /**
      * Draw a line segment on the surface.
      * 
-     * @param  {[type]} segment   Start and end points of the line
-     * @param  {[type]} color     Target color or gradient
-     * @param  {Number} linewidth Width of the line
-     * @param  {String} blend     Drawing blend mode
+     * @param  {Segment} segment   Start and end points of the line
+     * @param  {Color}   color     Target color or gradient
+     * @param  {Number}  linewidth Width of the line
+     * @param  {String}  blend     Drawing blend mode
      */
     draw_line(segment, color, linewidth=1, blend="source-over") {
         this.surface.globalAlpha = color.alpha();
@@ -812,13 +830,28 @@ class Surface {
      * @param  {Vec2D}  pos    Centered position of target
      * @param  {String} blend  Drawing blend mode
      */
-    draw_text(string, font, size, color, pos, blend="source-over") {
-        this.surface.fillStyle = color.get();
+    draw_text(string, font, size, color, pos, fill=true, linewidth=1, bold=false, italic=false, align="left", blend="source-over") {
         this.surface.globalAlpha = color.alpha();
         this.surface.globalCompositeOperation = blend;
 
-        this.surface.font = size + 'px ' + font;
-        this.surface.fillText(string, pos.x, pos.y);
+        var mods = "";
+        if(bold) {
+            mods += "bold ";
+        }
+        if(italic) {
+            mods += "italic ";
+        }
+        this.surface.font = mods + size + 'px ' + font;
+        this.surface.textAlign = align;
+        if(fill) {
+            this.surface.fillStyle = color.get();
+            this.surface.fillText(string, pos.x, pos.y);
+        }
+        else {
+            this.surface.strokeStyle = color.get();
+            this.surface.lineWidth = linewidth;
+            this.surface.strokeText(string, pos.x, pos.y);
+        }
         
         this.surface.globalAlpha = 1.0;
         this.surface.globalCompositeOperation = "source-over";

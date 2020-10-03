@@ -272,6 +272,29 @@ class Vec2D {
     get() {
         return [this.x, this.y];
     }
+
+    /**
+     * Grab the string representation of the vector.
+     * 
+     * @return {String} Comma-separated values
+     */
+    to_string() {
+        return this.x+","+this.y;
+    }
+
+    /**
+     * Create a new Vec2D object from a comma-separated string.
+     * 
+     * @param  {String} string Comma-separated values
+     * @return {Vec2D}         New Vec2D object
+     */
+    static from_string(string) {
+        var vals = string.split(",");
+        return new Vec2D(
+            parseFloat(vals[0]), 
+            parseFloat(vals[1])
+        );
+    }
 }
 
 

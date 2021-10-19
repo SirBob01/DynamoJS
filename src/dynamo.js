@@ -733,6 +733,7 @@ class Surface {
         this.surface.globalAlpha = color.alpha();
         this.surface.globalCompositeOperation = blend;
         this.surface.strokeStyle = color.get();
+        this.surface.lineWidth = linewidth;
 
         this.surface.beginPath();
         this.surface.moveTo(segment.start.x, segment.start.y);

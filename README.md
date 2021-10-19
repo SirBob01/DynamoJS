@@ -9,6 +9,6 @@ None, just vanilla JavaScript.
 
 ## License
 
-Code and documentation Copyright (c) 2020 Keith Leonardo
+Code and documentation Copyright (c) 2021 Keith Leonardo
 
 Code released under the [MIT License](https://choosealicense.com/licenses/mit/).

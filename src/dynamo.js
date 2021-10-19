@@ -1380,3 +1380,20 @@ class Engine {
         window.requestAnimationFrame(f);
     }
 }
+
+(function (exports) {
+    exports.lerp = lerp;
+    exports.clamp = clamp;
+    exports.randrange = randrange;
+    exports.Color = Color;
+    exports.ColorGradient = ColorGradient;
+    exports.Vec2D = Vec2D;
+    exports.Segment = Segment;
+    exports.AABB = AABB;
+    exports.Sprite = Sprite;
+    exports.Surface = Surface;
+    exports.Jukebox = Jukebox;
+    exports.Input = Input;
+    exports.GameState = GameState;
+    exports.Engine = Engine;
+})(typeof exports === 'undefined' ? this.dynamo = {} : exports);

@@ -1,6 +1,6 @@
 {
   "name": "dynamojs-engine",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Game engine library for HTML5 Canvas",
   "main": "dynamo.js",
   "scripts": {

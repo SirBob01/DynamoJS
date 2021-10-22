@@ -645,26 +645,24 @@ class Surface {
      * @param  {AABB}    aabb    Target bounding box for stretching
      * @param  {String}  blend   Drawing blend mode
      * @param  {Number}  opacity Transparency value
+     * @param  {Number}  angle   Angular rotation in radians
      * @param  {Vec2D}   flip    Flip factor of the image
      * @param  {Boolean} center  Should drawing be centered?
      */
-    draw_surface(src, aabb, blend="source-over", opacity=1.0, flip=new Vec2D(1, 1), center=true) {
+    draw_surface(src, aabb, blend="source-over", opacity=1.0, angle=0.0, flip=new Vec2D(1, 1), center=true) {
         this.surface.globalCompositeOperation = blend;
         this.surface.globalAlpha = opacity;
         this.surface.scale(flip.x, flip.y);
-
+        
         var point = aabb.center.copy();
-        if(center) {
-            point.x -= aabb.dim.x * 0.5 * flip.x;
-            point.y -= aabb.dim.y * 0.5 * flip.y;
+        if(!center) {
+            point = point.add(aabb.dim.scale(0.5));
         }
-        else {
-            point.x *= flip.x;
-            point.y *= flip.y;
-        }
+        this.surface.translate(point.x * flip.x, point.y * flip.y);
+        this.surface.rotate(angle);
         this.surface.drawImage(
-            src.canvas,
-            point.x * flip.x, point.y * flip.y,
+            src.canvas, 
+            -aabb.dim.x / 2, -aabb.dim.y / 2, 
             aabb.dim.x, aabb.dim.y
         );
         this.surface.setTransform(1, 0, 0, 1, 0, 0);
@@ -679,56 +677,39 @@ class Surface {
      * @param  {AABB}    aabb    Target bounding box for stretching
      * @param  {String}  blend   Drawing blend mode
      * @param  {Number}  opacity Transparency value
+     * @param  {Number}  angle   Angular rotation in radians
      * @param  {Vec2D}   flip    Flip factor of the image
      * @param  {Boolean} center  Should drawing be centered?
      */
-    draw_sprite(sprite, aabb, blend="source-over", opacity=1.0, flip=new Vec2D(1, 1), center=true) {
+    draw_sprite(sprite, aabb, blend="source-over", opacity=1.0, angle=0.0, flip=new Vec2D(1, 1), center=true) {
         if(sprite.frames.length == 0) {
             // Assumes that the sprite will *eventually* load
             // Unless Sprite could not load image of course...
             return;
         }
-        this.surface.globalAlpha = opacity;
         this.surface.globalCompositeOperation = blend;
+        this.surface.globalAlpha = opacity;
         this.surface.scale(flip.x, flip.y);
 
         var frame = sprite.frames[sprite.current_frame];
-        if(aabb.dim.x && aabb.dim.y) {
-            var point = aabb.center.copy();
-            if(center) {
-                point.x -= aabb.dim.x * 0.5 * flip.x;
-                point.y -= aabb.dim.y * 0.5 * flip.y;
-            }
-            else {
-                point.x *= flip.x;
-                point.y *= flip.y;
-            }
-            this.surface.drawImage(
-                sprite.img,
-                frame.x, frame.y,
-                sprite.size.x, sprite.size.y,
-                point.x * flip.x, point.y * flip.y,
-                aabb.dim.x, aabb.dim.y
-            );
+        var point = aabb.center.copy();
+        var dim = aabb.dim.copy();
+        if(!dim.x && !dim.y) {
+            dim.x = sprite.size.x;
+            dim.y = sprite.size.y;
         }
-        else {
-            var point = aabb.center.copy();
-            if(center) {
-                point.x -= sprite.size.x * 0.5 * flip.x;
-                point.y -= sprite.size.y * 0.5 * flip.y;
-            }
-            else {
-                point.x *= flip.x;
-                point.y *= flip.y;
-            }
-            this.surface.drawImage(
-                sprite.img,
-                frame.x, frame.y,
-                sprite.size.x, sprite.size.y,
-                point.x * flip.x, point.y * flip.y,
-                sprite.size.x, sprite.size.y
-            );
+        if(!center) {
+            point = point.add(dim.scale(0.5));
         }
+        this.surface.translate(point.x * flip.x, point.y * flip.y);
+        this.surface.rotate(angle);
+        this.surface.drawImage(
+            sprite.img,
+            frame.x, frame.y,
+            sprite.size.x, sprite.size.y,
+            -dim.x / 2, -dim.y / 2,
+            dim.x, dim.y
+        );
         this.surface.setTransform(1, 0, 0, 1, 0, 0);
         this.surface.globalAlpha = 1.0;
         this.surface.globalCompositeOperation = "source-over";

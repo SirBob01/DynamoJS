@@ -92,7 +92,7 @@ export class ColorGradient {
      * Set a color at a position in the gradient.
      *
      * @param {Color} color Target color value
-     * @param {Number} t     Position in gradient between [0, 1]
+     * @param {Number} t    Position in gradient between [0, 1]
      */
     add_value(color: Color, t: number): void;
     /**
@@ -356,9 +356,9 @@ export class Surface {
     /**
      * Fill the entire surface with a color or gradient.
      *
-     * @param  {Color} color Target color or gradient
+     * @param  {Color | ColorGradient} color Target color or gradient
      */
-    fill(color: Color): void;
+    fill(color: Color | ColorGradient): void;
     /**
      * Draw another surface on top of the current one.
      *
@@ -386,55 +386,55 @@ export class Surface {
     /**
      * Draw a line segment on the surface.
      *
-     * @param  {Segment} segment   Start and end points of the line
-     * @param  {Color}   color     Target color or gradient
-     * @param  {Number}  linewidth Width of the line
-     * @param  {String}  blend     Drawing blend mode
+     * @param  {Segment}                 segment   Start and end points of the line
+     * @param  {Color | ColorGradient}   color     Target color or gradient
+     * @param  {Number}                  linewidth Width of the line
+     * @param  {String}                  blend     Drawing blend mode
      */
-    draw_line(segment: Segment, color: Color, linewidth?: number, blend?: string): void;
+    draw_line(segment: Segment, color: Color | ColorGradient, linewidth?: number, blend?: string): void;
     /**
      * Draw a rectangular shape on the surface.
      *
-     * @param  {AABB}    aabb      Target bounding box
-     * @param  {Color}   color     Target color or gradient
-     * @param  {Boolean} fill      Should the shape be filled?
-     * @param  {Number}  linewidth Width of the outline
-     * @param  {String}  blend     Drawing blend mode
-     * @param  {Boolean} center    Should drawing be centered?
+     * @param  {AABB}                  aabb      Target bounding box
+     * @param  {Color | ColorGradient} color     Target color or gradient
+     * @param  {Boolean}               fill      Should the shape be filled?
+     * @param  {Number}                linewidth Width of the outline
+     * @param  {String}                blend     Drawing blend mode
+     * @param  {Boolean}               center    Should drawing be centered?
      */
-    draw_rect(aabb: AABB, color: Color, fill?: boolean, linewidth?: number, blend?: string, center?: boolean): void;
+    draw_rect(aabb: AABB, color: Color | ColorGradient, fill?: boolean, linewidth?: number, blend?: string, center?: boolean): void;
     /**
      * Draw a circular shape on the surface.
      *
-     * @param  {Vec2D}   center    Centered position of target
-     * @param  {Number}  radius    Radius of the circle
-     * @param  {Color}   color     Target color or gradient
-     * @param  {Boolean} fill      Should the shape be filled?
-     * @param  {Number}  linewidth Width of the outline
-     * @param  {String}  blend     Drawing blend mode
+     * @param  {Vec2D}                 center    Centered position of target
+     * @param  {Number}                radius    Radius of the circle
+     * @param  {Color | ColorGradient} color     Target color or gradient
+     * @param  {Boolean}               fill      Should the shape be filled?
+     * @param  {Number}                linewidth Width of the outline
+     * @param  {String}                blend     Drawing blend mode
      */
-    draw_circle(center: Vec2D, radius: number, color: Color, fill?: boolean, linewidth?: number, blend?: string): void;
+    draw_circle(center: Vec2D, radius: number, color: Color | ColorGradient, fill?: boolean, linewidth?: number, blend?: string): void;
     /**
      * Draw a polygon from a sorted list of points
      *
-     * @param  {Vec2D[]}   points    Sorted array of Vec2D points
-     * @param  {Color}   color     Target color or gradient
-     * @param  {Boolean} fill      Should the shape be filled?
-     * @param  {Number}  linewidth Width of the outline
-     * @param  {String}  blend     Drawing blend mode
+     * @param  {Vec2D[]}               points    Sorted array of Vec2D points
+     * @param  {Color | ColorGradient} color     Target color or gradient
+     * @param  {Boolean}               fill      Should the shape be filled?
+     * @param  {Number}                linewidth Width of the outline
+     * @param  {String}                blend     Drawing blend mode
      */
-    draw_polygon(points: Vec2D[], color: Color, fill?: boolean, linewidth?: number, blend?: string): void;
+    draw_polygon(points: Vec2D[], color: Color | ColorGradient, fill?: boolean, linewidth?: number, blend?: string): void;
     /**
      * Render text on the surface.
      *
-     * @param  {String} string Text to be rendered
-     * @param  {String} font   Valid font family
-     * @param  {Number} size   Size of the font in pixels
-     * @param  {Color}  color  Target color or gradient
-     * @param  {Vec2D}  pos    Centered position of target
-     * @param  {String} blend  Drawing blend mode
+     * @param  {String}                string Text to be rendered
+     * @param  {String}                font   Valid font family
+     * @param  {Number}                size   Size of the font in pixels
+     * @param  {Color | ColorGradient} color  Target color or gradient
+     * @param  {Vec2D}                 pos    Centered position of target
+     * @param  {String}                blend  Drawing blend mode
      */
-    draw_text(string: string, font: string, size: number, color: Color, pos: Vec2D, fill?: boolean, linewidth?: number, bold?: boolean, italic?: boolean, align?: string, blend?: string): void;
+    draw_text(string: string, font: string, size: number, color: Color | ColorGradient, pos: Vec2D, fill?: boolean, linewidth?: number, bold?: boolean, italic?: boolean, align?: string, blend?: string): void;
     /**
      * Clear the entire surface.
      */

@@ -148,7 +148,7 @@ class ColorGradient {
    * Set a color at a position in the gradient.
    *
    * @param {Color} color Target color value
-   * @param {Number} t     Position in gradient between [0, 1]
+   * @param {Number} t    Position in gradient between [0, 1]
    */
   add_value(color, t) {
     this.grad.addColorStop(t, color.get());
@@ -636,7 +636,7 @@ class Surface {
   /**
    * Fill the entire surface with a color or gradient.
    *
-   * @param  {Color} color Target color or gradient
+   * @param  {Color | ColorGradient} color Target color or gradient
    */
   fill(color) {
     this.draw_rect(this.rect(), color, true);
@@ -744,10 +744,10 @@ class Surface {
   /**
    * Draw a line segment on the surface.
    *
-   * @param  {Segment} segment   Start and end points of the line
-   * @param  {Color}   color     Target color or gradient
-   * @param  {Number}  linewidth Width of the line
-   * @param  {String}  blend     Drawing blend mode
+   * @param  {Segment}                 segment   Start and end points of the line
+   * @param  {Color | ColorGradient}   color     Target color or gradient
+   * @param  {Number}                  linewidth Width of the line
+   * @param  {String}                  blend     Drawing blend mode
    */
   draw_line(segment, color, linewidth = 1, blend = "source-over") {
     this.surface.globalAlpha = color.alpha();
@@ -767,12 +767,12 @@ class Surface {
   /**
    * Draw a rectangular shape on the surface.
    *
-   * @param  {AABB}    aabb      Target bounding box
-   * @param  {Color}   color     Target color or gradient
-   * @param  {Boolean} fill      Should the shape be filled?
-   * @param  {Number}  linewidth Width of the outline
-   * @param  {String}  blend     Drawing blend mode
-   * @param  {Boolean} center    Should drawing be centered?
+   * @param  {AABB}                  aabb      Target bounding box
+   * @param  {Color | ColorGradient} color     Target color or gradient
+   * @param  {Boolean}               fill      Should the shape be filled?
+   * @param  {Number}                linewidth Width of the outline
+   * @param  {String}                blend     Drawing blend mode
+   * @param  {Boolean}               center    Should drawing be centered?
    */
   draw_rect(
     aabb,
@@ -806,12 +806,12 @@ class Surface {
   /**
    * Draw a circular shape on the surface.
    *
-   * @param  {Vec2D}   center    Centered position of target
-   * @param  {Number}  radius    Radius of the circle
-   * @param  {Color}   color     Target color or gradient
-   * @param  {Boolean} fill      Should the shape be filled?
-   * @param  {Number}  linewidth Width of the outline
-   * @param  {String}  blend     Drawing blend mode
+   * @param  {Vec2D}                 center    Centered position of target
+   * @param  {Number}                radius    Radius of the circle
+   * @param  {Color | ColorGradient} color     Target color or gradient
+   * @param  {Boolean}               fill      Should the shape be filled?
+   * @param  {Number}                linewidth Width of the outline
+   * @param  {String}                blend     Drawing blend mode
    */
   draw_circle(
     center,
@@ -840,11 +840,11 @@ class Surface {
   /**
    * Draw a polygon from a sorted list of points
    *
-   * @param  {Vec2D[]}   points    Sorted array of Vec2D points
-   * @param  {Color}   color     Target color or gradient
-   * @param  {Boolean} fill      Should the shape be filled?
-   * @param  {Number}  linewidth Width of the outline
-   * @param  {String}  blend     Drawing blend mode
+   * @param  {Vec2D[]}               points    Sorted array of Vec2D points
+   * @param  {Color | ColorGradient} color     Target color or gradient
+   * @param  {Boolean}               fill      Should the shape be filled?
+   * @param  {Number}                linewidth Width of the outline
+   * @param  {String}                blend     Drawing blend mode
    */
   draw_polygon(
     points,
@@ -877,12 +877,12 @@ class Surface {
   /**
    * Render text on the surface.
    *
-   * @param  {String} string Text to be rendered
-   * @param  {String} font   Valid font family
-   * @param  {Number} size   Size of the font in pixels
-   * @param  {Color}  color  Target color or gradient
-   * @param  {Vec2D}  pos    Centered position of target
-   * @param  {String} blend  Drawing blend mode
+   * @param  {String}                string Text to be rendered
+   * @param  {String}                font   Valid font family
+   * @param  {Number}                size   Size of the font in pixels
+   * @param  {Color | ColorGradient} color  Target color or gradient
+   * @param  {Vec2D}                 pos    Centered position of target
+   * @param  {String}                blend  Drawing blend mode
    */
   draw_text(
     string,

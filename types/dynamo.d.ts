@@ -577,6 +577,15 @@ export class GameState {
      */
     update(core: Core): void;
 }
+export class Core {
+    display: Surface;
+    audio: Jukebox;
+    input: Input;
+    clock: {
+        dt: number;
+        dt_cap: number;
+    };
+}
 export class Engine {
     /**
      * The main DynamoJS engine.
@@ -597,13 +606,3 @@ export class Engine {
      */
     run(): void;
 }
-declare class Core {
-    display: Surface;
-    audio: Jukebox;
-    input: Input;
-    clock: {
-        dt: number;
-        dt_cap: number;
-    };
-}
-export {};

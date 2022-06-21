@@ -1437,5 +1437,6 @@ class Engine {
   exports.Jukebox = Jukebox;
   exports.Input = Input;
   exports.GameState = GameState;
+  exports.Core = Core;
   exports.Engine = Engine;
 })(typeof exports === "undefined" ? (this.dynamo = {}) : exports);

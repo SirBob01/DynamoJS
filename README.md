@@ -5,7 +5,7 @@
 
 ## Dependencies
 
-None, just vanilla JavaScript.
+To support Typescript projects, this requires the `typescript` library to generate the type configurations.
 
 ## License
 

@@ -138,8 +138,8 @@ class ColorGradient {
     /**
      * Set a color at a position in the gradient.
      * 
-     * @param {[type]} color Target color value
-     * @param {[type]} t     Position in gradient between [0, 1]
+     * @param {Color} color Target color value
+     * @param {Number} t     Position in gradient between [0, 1]
      */
     add_value(color, t) {
         this.grad.addColorStop(t, color.get());
@@ -267,7 +267,7 @@ class Vec2D {
     /**
      * Get the array representation of the vector.
      * 
-     * @return {Array} Ordered list of coordinate values
+     * @return {Number[]} Ordered list of coordinate values
      */
     get() {
         return [this.x, this.y];
@@ -461,16 +461,22 @@ class AABB {
     }
 }
 
+/**
+ * @callback spriteCallback
+ * @param {Sprite} sprite
+ * @return {void}
+ */
 
 class Sprite {
     /**
      * An animated sprite from an image file.
      * 
-     * @param  {String} file    Filepath to the target image
-     * @param  {Number} frame_x Width of each frame
-     * @param  {Number} frame_y Height of each frame
-     * @param  {Number} nframes Maximum number of frames
-     * @return {Sprite}         New Sprite object
+     * @param  {String}                file      Filepath to the target image
+     * @param  {Number}                frame_x   Width of each frame
+     * @param  {Number}                frame_y   Height of each frame
+     * @param  {Number}                nframes   Maximum number of frames
+     * @param  {null | spriteCallback} callback  On-load callback function 
+     * @return {Sprite}                          Sprite object
      */
     constructor(file, frame_x=0, frame_y=0, nframes=0, callback=null) {
         this.img = new Image();
@@ -809,7 +815,7 @@ class Surface {
     /**
      * Draw a polygon from a sorted list of points
      * 
-     * @param  {Array}   points    Sorted array of Vec2D points
+     * @param  {Vec2D[]}   points    Sorted array of Vec2D points
      * @param  {Color}   color     Target color or gradient
      * @param  {Boolean} fill      Should the shape be filled?
      * @param  {Number}  linewidth Width of the outline
@@ -990,7 +996,7 @@ class Jukebox {
      * @param  {Number} fadein   Fade in time in seconds
      * @param  {Number} loops    Number of repetitions (-1 for infinite)
      * @param  {Vec2D}  position Location of the sound relative to origin
-     * @return {Object}          User-accessible track information
+     * @return {{volume: number, position: Vec2D}} User-accessible track information
      */
     queue_stream(stream, url, volume, fadein, loops, position) {
         if(!(stream in this.streams)) {
@@ -1273,7 +1279,7 @@ class GameState {
      * Load the state. This can be overriden.
      * This is called only once in its lifetime.
      * 
-     * @param  {Object} core Core modules passed by Engine
+     * @param  {Core} core Core modules passed by Engine
      */
     on_entry(core) {
         return;
@@ -1283,7 +1289,7 @@ class GameState {
      * Exit the state. This can be overriden.
      * This is called only once in its lifetime.
      * 
-     * @param  {Object} core Core modules passed by Engine
+     * @param  {Core} core Core modules passed by Engine
      */
     on_exit(core) {
         return;
@@ -1293,10 +1299,26 @@ class GameState {
      * Update the state at every frame. This can be overriden.
      * This is called throughout its lifetime.
      * 
-     * @param  {Object} core Core modules passed by Engine
+     * @param  {Core} core Core modules passed by Engine
      */
     update(core) {
         return;
+    }
+}
+
+
+class Core {
+    /**
+     * Container for all the core modules of the engine
+     */
+    constructor() {
+        this.display = new Surface(0, 0, document.getElementById("display"));
+        this.audio = new Jukebox();
+        this.input = new Input();
+        this.clock = {
+            dt: 0,
+            dt_cap: 100, // Protect integration from breaking
+        };
     }
 }
 
@@ -1309,19 +1331,7 @@ class Engine {
      * @return {Engine}                  New Engine object
      */
     constructor(initial_state) {
-        this.core = {
-            display : new Surface(
-                0, 0, 
-                document.getElementById("display")
-            ),
-            audio : new Jukebox(),
-            input : new Input(),
-            clock : {
-                dt : 0,
-                dt_cap : 100 // Protect integration from breaking
-            }
-        };
-
+        this.core = new Core();
         this.states = [initial_state];
         initial_state.on_entry(this.core);
         this.core.input.poll(this.core.display.canvas);

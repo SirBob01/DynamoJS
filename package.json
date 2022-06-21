@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Game engine library for HTML5 Canvas",
   "main": "dynamo.js",
+  "types": "types/dynamo.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/SirBob01/DynamoJS/issues"
   },
-  "homepage": "https://github.com/SirBob01/DynamoJS#readme"
+  "homepage": "https://github.com/SirBob01/DynamoJS#readme",
+  "dependencies": {
+    "typescript": "4.7.4"
+  }
 }

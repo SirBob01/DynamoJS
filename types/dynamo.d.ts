@@ -262,21 +262,21 @@ export class AABB {
     /**
      * Get the right side of the AABB.
      *
-     * @return {Vec2D} Line segment of the right face
+     * @return {Segment} Line segment of the right face
      */
-    right(): Vec2D;
+    right(): Segment;
     /**
      * Get the top side of the AABB.
      *
-     * @return {Vec2D} Line segment of the top face
+     * @return {Segment} Line segment of the top face
      */
-    top(): Vec2D;
+    top(): Segment;
     /**
      * Get the bottom side of the AABB.
      *
-     * @return {Vec2D} Line segment of the bottom face
+     * @return {Segment} Line segment of the bottom face
      */
-    bottom(): Vec2D;
+    bottom(): Segment;
     /**
      * Test if a point is within the AABB.
      *

@@ -930,6 +930,18 @@ class Surface {
   }
 }
 
+class AudioStream {
+  /**
+   * Meta data for long audio tracks, like music or dialogue
+   */
+  constructor() {
+    this.max_volume = 1.0;
+    this.volume = 1.0;
+    this.tracks = [];
+    this.is_playing = true;
+  }
+}
+
 class Jukebox {
   /**
    * The audio engine.
@@ -942,8 +954,8 @@ class Jukebox {
     this.max_distance = 1000;
 
     // id : bytestream
-    this.sounds = {};
-    this.streams = {};
+    this.sounds = new Map();
+    this.streams = new Map();
   }
 
   /**
@@ -961,7 +973,7 @@ class Jukebox {
         _this.context.decodeAudioData(
           request.response,
           function (buffer) {
-            _this.sounds[url] = buffer;
+            _this.sounds.set(url, buffer);
           },
           function (e) {
             throw "Error decoding " + url + ": " + e.err;
@@ -981,7 +993,7 @@ class Jukebox {
    * @param  {Vec2D}  position Location of the sound relative to origin
    */
   play_sound(url, volume, position) {
-    if (!(url in this.sounds)) {
+    if (!this.sounds.has(url)) {
       this.load_sound(url);
     }
     var source_node = this.context.createBufferSource();
@@ -993,7 +1005,7 @@ class Jukebox {
     gain_node.connect(this.context.destination);
 
     // Set initial values
-    source_node.buffer = this.sounds[url];
+    source_node.buffer = this.sounds.get(url);
 
     panner_node.panningModel = "equalpower";
     panner_node.distanceModel = "linear";
@@ -1018,12 +1030,7 @@ class Jukebox {
    * @param  {String} stream Name of the stream
    */
   create_stream(stream) {
-    this.streams[stream] = {
-      max_volume: 1.0,
-      volume: 1.0,
-      tracks: [],
-      is_playing: true,
-    };
+    this.streams.set(stream, new AudioStream());
   }
 
   /**
@@ -1038,7 +1045,7 @@ class Jukebox {
    * @return {{volume: number, position: Vec2D}} User-accessible track information
    */
   queue_stream(stream, url, volume, fadein, loops, position) {
-    if (!(stream in this.streams)) {
+    if (!this.streams.has(stream)) {
       throw '"' + stream + '" audio stream does not exist.';
     }
     var media_elem = new Audio();
@@ -1076,7 +1083,7 @@ class Jukebox {
     track.panner_node.connect(track.gain_node);
     track.gain_node.connect(this.context.destination);
 
-    this.streams[stream].tracks.push(track);
+    this.streams.get(stream).tracks.push(track);
     return track.user_inf;
   }
 
@@ -1087,10 +1094,10 @@ class Jukebox {
    * @param  {Number} fadeout Fade out time in seconds
    */
   skip_stream(stream, fadeout = 0) {
-    if (!(stream in this.streams)) {
+    if (!this.streams.has(stream)) {
       throw '"' + stream + '" audio stream does not exist.';
     }
-    var s = this.streams[stream];
+    var s = this.streams.get(stream);
     if (s.tracks.length == 0) {
       return;
     }
@@ -1116,19 +1123,19 @@ class Jukebox {
    * @param  {Number} fadeout Fade out time in seconds
    */
   clear_stream(stream, fadeout = 0) {
-    if (!(stream in this.streams)) {
+    if (!this.streams.has(stream)) {
       throw '"' + stream + '" audio stream does not exist.';
     }
     this.skip_stream(stream, fadeout);
-    this.streams[stream].tracks = [];
+    this.streams.get(stream).tracks = [];
   }
 
   /**
    * Update all streams.
    */
   update() {
-    for (var s in this.streams) {
-      var stream = this.streams[s];
+    for (var s of this.streams.keys()) {
+      var stream = this.streams.get(s);
       if (stream.tracks.length == 0) {
         continue;
       }
@@ -1434,6 +1441,7 @@ class Engine {
   exports.AABB = AABB;
   exports.Sprite = Sprite;
   exports.Surface = Surface;
+  exports.AudioStream = AudioStream;
   exports.Jukebox = Jukebox;
   exports.Input = Input;
   exports.GameState = GameState;

@@ -440,12 +440,18 @@ export class Surface {
      */
     clear(): void;
 }
+export class AudioStream {
+    max_volume: number;
+    volume: number;
+    tracks: any[];
+    is_playing: boolean;
+}
 export class Jukebox {
     context: AudioContext;
     volume: number;
     max_distance: number;
-    sounds: {};
-    streams: {};
+    sounds: any;
+    streams: any;
     /**
      * Load a sound from a URL and map it to an ID.
      *

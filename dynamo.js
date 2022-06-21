@@ -953,8 +953,10 @@ class Jukebox {
     this.volume = 1.0;
     this.max_distance = 1000;
 
-    // id : bytestream
+    /** @type {Map<string, AudioBuffer>} */
     this.sounds = new Map();
+
+    /** @type {Map<string, AudioStream>} */
     this.streams = new Map();
   }
 

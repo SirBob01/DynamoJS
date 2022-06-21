@@ -450,8 +450,10 @@ export class Jukebox {
     context: AudioContext;
     volume: number;
     max_distance: number;
-    sounds: any;
-    streams: any;
+    /** @type {Map<string, AudioBuffer>} */
+    sounds: Map<string, AudioBuffer>;
+    /** @type {Map<string, AudioStream>} */
+    streams: Map<string, AudioStream>;
     /**
      * Load a sound from a URL and map it to an ID.
      *

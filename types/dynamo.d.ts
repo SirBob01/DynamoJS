@@ -1,4 +1,29 @@
+export type LinearGradient = {
+    start: Vec2D;
+    end: Vec2D;
+};
+export type RadialGradient = {
+    in_pos: Vec2D;
+    out_pos: Vec2D;
+    in_r: number;
+    out_r: number;
+};
+export type GradientValues = LinearGradient | RadialGradient;
 export type spriteCallback = (sprite: Sprite) => void;
+export type AudioTrack = {
+    media: HTMLAudioElement;
+    loops: number;
+    fadein: number;
+    start: boolean;
+    skipped: boolean;
+    source_node: MediaElementAudioSourceNode;
+    panner_node: PannerNode;
+    gain_node: GainNode;
+    user_inf: {
+        volume: number;
+        position: Vec2D;
+    };
+};
 /**   Utility functions   **/
 /**
  * Linearly interpolate between two values.
@@ -69,6 +94,19 @@ export class Color {
      */
     alpha(): number;
 }
+/**
+ * @typedef LinearGradient
+ * @prop {Vec2D} start
+ * @prop {Vec2D} end
+ */
+/**
+ * @typedef RadialGradient
+ * @prop {Vec2D} in_pos
+ * @prop {Vec2D} out_pos
+ * @prop {number} in_r
+ * @prop {number} out_r
+ */
+/** @typedef {LinearGradient | RadialGradient} GradientValues */
 export class ColorGradient {
     /**
      * A wrapper for a canvas color gradient. It can
@@ -79,14 +117,15 @@ export class ColorGradient {
      *     "radial" - {in_pos (Vec2D), in_r (Number),
      *                 out_pos (Vec2D), out_r (Number)}
      *
-     * @param  {Surface} surface    Target Surface object
-     * @param  {String}  type       Type of gradient (linear or radial)
-     * @param  {Object}  values     Gradient type-dependent parameters
-     * @param  {Number}  alpha      Alpha value between [0, 255]
-     * @return {ColorGradient}      New ColorGradient object
+     * @param  {Surface}         surface    Target Surface object
+     * @param  {String}          type       Type of gradient (linear or radial)
+     * @param  {GradientValues}  values     Gradient type-dependent parameters
+     * @param  {Number}          alpha      Alpha value between [0, 255]
+     * @return {ColorGradient}              New ColorGradient object
      */
-    constructor(surface: Surface, type: string, values: any, alpha?: number);
-    grad: any;
+    constructor(surface: Surface, type: string, values: GradientValues, alpha?: number);
+    /** @type {CanvasGradient} */
+    grad: CanvasGradient;
     a: number;
     /**
      * Set a color at a position in the gradient.
@@ -310,7 +349,8 @@ export class Sprite {
      */
     constructor(file: string, frame_x?: number, frame_y?: number, nframes?: number, callback?: null | spriteCallback);
     img: HTMLImageElement;
-    frames: any[];
+    /** @type {Vec2D[]} */
+    frames: Vec2D[];
     accumulator: number;
     current_frame: number;
     finished: boolean;
@@ -337,7 +377,8 @@ export class Surface {
      */
     constructor(w?: number, h?: number, canvas?: Element);
     canvas: Element;
-    surface: any;
+    /** @type {CanvasRenderingContext2D} */
+    surface: CanvasRenderingContext2D;
     /**
      * Get the bounds of the surface.
      *
@@ -440,10 +481,24 @@ export class Surface {
      */
     clear(): void;
 }
+/**
+ * @typedef AudioTrack
+ *
+ * @prop {HTMLAudioElement} media
+ * @prop {number} loops
+ * @prop {number} fadein
+ * @prop {boolean} start
+ * @prop {boolean} skipped
+ * @prop {MediaElementAudioSourceNode} source_node
+ * @prop {PannerNode} panner_node
+ * @prop {GainNode} gain_node
+ * @prop {{volume: number, position: Vec2D}} user_inf
+ */
 export class AudioStream {
     max_volume: number;
     volume: number;
-    tracks: any[];
+    /** @type {AudioTrack[]} */
+    tracks: AudioTrack[];
     is_playing: boolean;
 }
 export class Jukebox {

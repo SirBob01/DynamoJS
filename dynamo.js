@@ -107,6 +107,20 @@ class Color {
   }
 }
 
+/**
+ * @typedef LinearGradient
+ * @prop {Vec2D} start
+ * @prop {Vec2D} end
+ */
+/**
+ * @typedef RadialGradient
+ * @prop {Vec2D} in_pos
+ * @prop {Vec2D} out_pos
+ * @prop {number} in_r
+ * @prop {number} out_r
+ */
+/** @typedef {LinearGradient | RadialGradient} GradientValues */
+
 class ColorGradient {
   /**
    * A wrapper for a canvas color gradient. It can
@@ -117,14 +131,15 @@ class ColorGradient {
    *     "radial" - {in_pos (Vec2D), in_r (Number),
    *                 out_pos (Vec2D), out_r (Number)}
    *
-   * @param  {Surface} surface    Target Surface object
-   * @param  {String}  type       Type of gradient (linear or radial)
-   * @param  {Object}  values     Gradient type-dependent parameters
-   * @param  {Number}  alpha      Alpha value between [0, 255]
-   * @return {ColorGradient}      New ColorGradient object
+   * @param  {Surface}         surface    Target Surface object
+   * @param  {String}          type       Type of gradient (linear or radial)
+   * @param  {GradientValues}  values     Gradient type-dependent parameters
+   * @param  {Number}          alpha      Alpha value between [0, 255]
+   * @return {ColorGradient}              New ColorGradient object
    */
   constructor(surface, type, values, alpha = 255) {
     if (type == "linear") {
+      /** @type {CanvasGradient} */
       this.grad = surface.surface.createLinearGradient(
         values.start.x,
         values.start.y,
@@ -132,6 +147,7 @@ class ColorGradient {
         values.end.y
       );
     } else {
+      /** @type {CanvasGradient} */
       this.grad = surface.surface.createRadialGradient(
         values.in_pos.x,
         values.in_pos.y,
@@ -483,6 +499,7 @@ class Sprite {
     this.img = new Image();
     this.img.src = file;
 
+    /** @type {Vec2D[]} */
     this.frames = [];
 
     this.accumulator = 0;
@@ -578,6 +595,8 @@ class Surface {
         _this.canvas.height = height;
       });
     }
+
+    /** @type {CanvasRenderingContext2D} */
     this.surface = this.canvas.getContext("2d");
 
     // TODO: Why the fuck does this work? Figure this out soon pls.
@@ -930,6 +949,20 @@ class Surface {
   }
 }
 
+/**
+ * @typedef AudioTrack
+ *
+ * @prop {HTMLAudioElement} media
+ * @prop {number} loops
+ * @prop {number} fadein
+ * @prop {boolean} start
+ * @prop {boolean} skipped
+ * @prop {MediaElementAudioSourceNode} source_node
+ * @prop {PannerNode} panner_node
+ * @prop {GainNode} gain_node
+ * @prop {{volume: number, position: Vec2D}} user_inf
+ */
+
 class AudioStream {
   /**
    * Meta data for long audio tracks, like music or dialogue
@@ -937,6 +970,8 @@ class AudioStream {
   constructor() {
     this.max_volume = 1.0;
     this.volume = 1.0;
+
+    /** @type {AudioTrack[]} */
     this.tracks = [];
     this.is_playing = true;
   }

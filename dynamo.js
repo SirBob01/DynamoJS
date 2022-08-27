@@ -586,14 +586,6 @@ class Surface {
       const { width, height } = canvas.getBoundingClientRect();
       this.canvas.width = width;
       this.canvas.height = height;
-
-      // Refresh when window is resized
-      var _this = this;
-      window.addEventListener("resize", function (event) {
-        const { width, height } = _this.canvas.getBoundingClientRect();
-        _this.canvas.width = width;
-        _this.canvas.height = height;
-      });
     }
 
     /** @type {CanvasRenderingContext2D} */

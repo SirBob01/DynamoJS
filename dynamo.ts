@@ -1372,11 +1372,11 @@ class Input {
     };
 
     // Register
-    document.removeEventListener('keydown', keydown);
-    document.removeEventListener('keyup', keyup);
-    document.removeEventListener('mousedown', mousedown);
-    document.removeEventListener('mouseup', mouseup);
-    document.removeEventListener('mousemove', mousemove);
+    document.addEventListener('keydown', keydown);
+    document.addEventListener('keyup', keyup);
+    document.addEventListener('mousedown', mousedown);
+    document.addEventListener('mouseup', mouseup);
+    document.addEventListener('mousemove', mousemove);
     canvas.addEventListener('contextmenu', canvas_contextmenu, false);
 
     // Store a function to unregister everything
@@ -1502,16 +1502,9 @@ class Engine {
    * @return New Engine object
    */
   constructor(initial_state: GameState) {
-    /** @private */
     this.core = new Core();
-
-    /** @private */
     this.states = [initial_state];
-
-    /** @private */
     this.running = true;
-
-    /** @private */
     this.animationRequestId = 0;
 
     initial_state.on_entry(this.core);

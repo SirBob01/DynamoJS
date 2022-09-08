@@ -1,11 +1,18 @@
 {
   "name": "dynamojs-engine",
-  "version": "1.1.0",
+  "main": "./build/dynamo.js",
+  "module": "./build/dynamo.js",
+  "types": "./build/dynamo.d.ts",
+  "files": [
+    "build"
+  ],
+  "version": "1.2.0",
   "description": "Game engine library for HTML5 Canvas",
-  "main": "dynamo.js",
-  "types": "types/dynamo.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "postinstall": "tsc",
+    "lint": "prettier --write \"dynamo.ts\" && eslint dynamo.ts --fix"
   },
   "repository": {
     "type": "git",
@@ -26,5 +33,13 @@
   "homepage": "https://github.com/SirBob01/DynamoJS#readme",
   "dependencies": {
     "typescript": "4.7.4"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.7",
+    "prettier": "^2.7.1"
   }
 }

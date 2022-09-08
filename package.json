@@ -6,12 +6,11 @@
   "files": [
     "build"
   ],
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Game engine library for HTML5 Canvas",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "postinstall": "tsc",
     "lint": "prettier --write \"dynamo.ts\" && eslint dynamo.ts --fix"
   },
   "repository": {

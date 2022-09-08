@@ -1300,7 +1300,7 @@ class Input {
   /**
    * Get the state of an input.
    * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse1 - Mouse3.
+   * Mouse buttons range from Mouse0 - Mouse2.
    *
    * @param key  Target input to be tested
    * @return Is the input pressed or released?
@@ -1312,7 +1312,7 @@ class Input {
   /**
    * Check if input is pressed on the current frame.
    * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse1 - Mouse3.
+   * Mouse buttons range from Mouse0 - Mouse2.
    *
    * @param key  Target input to be tested
    * @return Is the input pressed this frame?
@@ -1324,7 +1324,7 @@ class Input {
   /**
    * Check if input is released on the current frame.
    * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse1 - Mouse3.
+   * Mouse buttons range from Mouse0 - Mouse2.
    *
    * @param key  Target input to be tested
    * @return Is the input released this frame?

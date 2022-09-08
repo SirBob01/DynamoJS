@@ -677,7 +677,7 @@ class Surface {
    *
    * @param color Target color or gradient
    */
-  fill(color: Color) {
+  fill(color: Color | ColorGradient) {
     this.draw_rect(this.rect(), color, true);
   }
 
@@ -790,7 +790,7 @@ class Surface {
    */
   draw_line(
     segment: Segment,
-    color: Color,
+    color: Color | ColorGradient,
     linewidth = 1,
     blend: GlobalCompositeOperation = 'source-over'
   ) {
@@ -820,7 +820,7 @@ class Surface {
    */
   draw_rect(
     aabb: AABB,
-    color: Color,
+    color: Color | ColorGradient,
     fill = false,
     linewidth = 1,
     blend: GlobalCompositeOperation = 'source-over',
@@ -860,7 +860,7 @@ class Surface {
   draw_circle(
     center: Vec2D,
     radius: number,
-    color: Color,
+    color: Color | ColorGradient,
     fill = false,
     linewidth = 1,
     blend: GlobalCompositeOperation = 'source-over'
@@ -892,7 +892,7 @@ class Surface {
    */
   draw_polygon(
     points: Vec2D[],
-    color: Color,
+    color: Color | ColorGradient,
     fill = false,
     linewidth = 1,
     blend: GlobalCompositeOperation = 'source-over'
@@ -932,7 +932,7 @@ class Surface {
     string: string,
     font: string,
     size: number,
-    color: Color,
+    color: Color | ColorGradient,
     pos: Vec2D,
     fill = true,
     linewidth = 1,
@@ -1105,6 +1105,16 @@ class Jukebox {
    */
   create_stream(stream: string) {
     this.streams.set(stream, new AudioStream());
+  }
+
+  /**
+   * Get a reference to an audio stream
+   *
+   * @param stream
+   * @returns Audio stream, if it exists
+   */
+  get_stream(stream: string) {
+    return this.streams.get(stream);
   }
 
   /**

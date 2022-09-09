@@ -4,6 +4,8 @@ class Sprite {
   private accumulator: number;
   private finished: boolean;
   private max_frames: number;
+  private on_frame: (frame: number) => void;
+  private on_finish: () => void;
   readonly img: HTMLImageElement;
   readonly frames: Vec2D[];
   readonly size: Vec2D;
@@ -30,6 +32,8 @@ class Sprite {
     this.img = new Image();
     this.img.src = file;
     this.frames = [];
+    this.on_frame = () => {};
+    this.on_finish = () => {};
 
     this.current_frame = 0;
     this.finished = false;
@@ -69,6 +73,25 @@ class Sprite {
   }
 
   /**
+   * Set the callback for when the animation finishes
+   *
+   * @param callback Callback method
+   */
+  set_on_finish(callback: () => void) {
+    this.on_finish = callback;
+  }
+
+  /**
+   * Set the callback for the start of an animation frame
+   * The callback should take an index representing the current frame
+   *
+   * @param callback Callback method
+   */
+  set_on_frame(callback: (frame: number) => void) {
+    this.on_frame = callback;
+  }
+
+  /**
    * Animate the sprite and update its current frame.
    * Call it on every tick.
    *
@@ -81,6 +104,7 @@ class Sprite {
     if (this.accumulator >= 1000.0 / fps) {
       this.current_frame++;
       this.accumulator = 0;
+      this.on_frame(this.current_frame);
     }
     if (this.current_frame > this.max_frames - 1) {
       if (loop) {
@@ -88,12 +112,21 @@ class Sprite {
       } else {
         this.current_frame = this.max_frames - 1;
         this.finished = true;
+        this.on_finish();
       }
     }
   }
 
   /**
-   * Test if the sprite's animation has finished.
+   * Restart the animation
+   */
+  restart() {
+    this.current_frame = 0;
+    this.finished = false;
+  }
+
+  /**
+   * Check if the sprite's animation has finished.
    *
    * If the sprite is looping, it will always return false
    *

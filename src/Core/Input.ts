@@ -24,10 +24,15 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key  Target input to be tested
+   * @param key         Target input to be tested
+   * @param ignore_case Ignore the capitalization of the key
    * @return Is the input pressed or released?
    */
-  get_state(key: string) {
+  get_state(key: string, ignore_case = false) {
+    if (ignore_case) {
+      const upper = key.toUpperCase();
+      return (this.state.get(key) || this.state.get(upper)) ?? false;
+    }
     return this.state.get(key) ?? false;
   }
 
@@ -36,10 +41,15 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key  Target input to be tested
+   * @param key         Target input to be tested
+   * @param ignore_case Ignore the capitalization of the key
    * @return Is the input pressed this frame?
    */
-  get_pressed(key: string) {
+  get_pressed(key: string, ignore_case = false) {
+    if (ignore_case) {
+      const upper = key.toUpperCase();
+      return (this.pressed.get(key) || this.pressed.get(upper)) ?? false;
+    }
     return this.pressed.get(key) ?? false;
   }
 
@@ -48,10 +58,15 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key  Target input to be tested
+   * @param key         Target input to be tested
+   * @param ignore_case Ignore the capitalization of the key
    * @return Is the input released this frame?
    */
-  get_released(key: string) {
+  get_released(key: string, ignore_case = false) {
+    if (ignore_case) {
+      const upper = key.toUpperCase();
+      return (this.released.get(key) || this.released.get(upper)) ?? false;
+    }
     return this.released.get(key) ?? false;
   }
 

@@ -7,7 +7,7 @@ type ResizeListener = (width: number, height: number) => void;
 
 class Display extends Surface {
   private container: HTMLElement;
-  private resize_listeners: ResizeListener[];
+  private resize_listener: ResizeListener;
   private fullscreen: boolean;
 
   /**
@@ -21,16 +21,14 @@ class Display extends Surface {
     container.appendChild(this.canvas);
 
     this.container = container;
-    this.resize_listeners = [];
+    this.resize_listener = () => {};
     this.fullscreen = false;
 
     // Listen for canvas resizing
     const resizeObserver = new ResizeObserver(() => {
       const { clientWidth, clientHeight } = container;
       this.set_size(clientWidth, clientHeight);
-      this.resize_listeners.forEach((listener) => {
-        listener(clientWidth, clientHeight);
-      });
+      this.resize_listener(clientWidth, clientHeight);
     });
     resizeObserver.observe(container);
 
@@ -38,35 +36,26 @@ class Display extends Surface {
     this.container.addEventListener('fullscreenchange', (event) => {
       const { clientWidth, clientHeight } = container;
       this.set_size(clientWidth, clientHeight);
-      this.resize_listeners.forEach((listener) => {
-        listener(clientWidth, clientHeight);
-      });
+      this.resize_listener(clientWidth, clientHeight);
     });
   }
 
   /**
-   * Add a new resize listener function that is called whenever
+   * Set the listener function that is called whenever
    * the display container is resized. This function should take
    * the updated width and height of the display.
    *
    * @param listener Listener function
    */
-  add_resize_listener(listener: ResizeListener) {
-    this.resize_listeners.push(listener);
+  set_resize_listener(listener: ResizeListener) {
+    this.resize_listener = listener;
   }
 
   /**
    * Remove a registered resize listener function, if it exists.
-   *
-   * @param listener Listener function
    */
-  remove_resize_listener(listener: ResizeListener) {
-    const index = this.resize_listeners.findIndex(
-      (query) => query === listener
-    );
-    if (index > -1) {
-      this.resize_listeners.splice(index, 1);
-    }
+  remove_resize_listener() {
+    this.resize_listener = () => {};
   }
 
   /**

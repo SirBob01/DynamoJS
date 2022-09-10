@@ -38,6 +38,9 @@ class Display extends Surface {
     this.container.addEventListener('fullscreenchange', (event) => {
       const { clientWidth, clientHeight } = container;
       this.set_size(clientWidth, clientHeight);
+      this.resize_listeners.forEach((listener) => {
+        listener(clientWidth, clientHeight);
+      });
     });
   }
 

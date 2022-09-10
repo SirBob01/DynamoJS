@@ -1,5 +1,6 @@
 import { Surface } from '../Surface';
 import { Clock } from './Clock';
+import { Display } from './Display';
 import { Input } from './Input';
 import { Jukebox } from './Jukebox';
 
@@ -12,12 +13,8 @@ class Core {
   /**
    * Container for all the core modules of the engine
    */
-  constructor() {
-    const element = document.getElementById('display');
-    if (!element) {
-      throw new Error('Could not find canvas with id `display`');
-    }
-    this.display = new Surface(0, 0, element as HTMLCanvasElement);
+  constructor(container: HTMLElement) {
+    this.display = new Display(container);
     this.audio = new Jukebox();
     this.input = new Input();
     this.clock = {

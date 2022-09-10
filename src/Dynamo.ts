@@ -1,4 +1,11 @@
-import { Jukebox, Input, Core, AudioStream, AudioTrackSettings } from './Core';
+import {
+  Jukebox,
+  Input,
+  Core,
+  AudioStream,
+  AudioTrackSettings,
+  Display,
+} from './Core';
 import { Vec2D, Segment, AABB } from './Math';
 import {
   Surface,
@@ -23,6 +30,7 @@ export {
   AABB,
   Sprite,
   Surface,
+  Display,
   Jukebox,
   Input,
   GameState,

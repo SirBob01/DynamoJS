@@ -15,24 +15,24 @@ class Surface {
    * @param canvas Target canvas element
    * @return New Surface object
    */
-  constructor(w = 0, h = 0, canvas: HTMLCanvasElement | null = null) {
-    if (!canvas) {
-      this.canvas = document.createElement('canvas');
-      this.canvas.width = w;
-      this.canvas.height = h;
-    } else {
-      this.canvas = canvas;
-
-      // Get actual size of the canvas
-      const { width, height } = canvas.getBoundingClientRect();
-      this.canvas.width = width;
-      this.canvas.height = height;
-    }
+  constructor(w: number, h: number) {
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = w;
+    this.canvas.height = h;
 
     this.surface = this.canvas.getContext('2d')!;
-
-    // TODO: Why the fuck does this work? Figure this out soon pls.
     this.surface.imageSmoothingEnabled = false;
+  }
+
+  /**
+   * Set the width and height of the surface's underlying canvas
+   *
+   * @param width  Width of the surface
+   * @param height Height of the surface
+   */
+  set_size(width: number, height: number) {
+    this.canvas.width = width;
+    this.canvas.height = height;
   }
 
   /**

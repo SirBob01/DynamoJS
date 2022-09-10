@@ -11,11 +11,12 @@ class Engine {
   /**
    * The main DynamoJS engine.
    *
+   * @param container     Container element for the display
    * @param initial_state Initial state of the application
    * @return New Engine object
    */
-  constructor(initial_state: GameState) {
-    this.core = new Core();
+  constructor(container: HTMLElement, initial_state: GameState) {
+    this.core = new Core(container);
     this.states = [initial_state];
     this.running = true;
     this.animation_request_id = 0;

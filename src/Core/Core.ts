@@ -1,11 +1,10 @@
-import { Surface } from '../Surface';
 import { Clock } from './Clock';
 import { Display } from './Display';
 import { Input } from './Input';
 import { Jukebox } from './Jukebox';
 
 class Core {
-  readonly display: Surface;
+  readonly display: Display;
   readonly audio: Jukebox;
   readonly input: Input;
   readonly clock: Clock;

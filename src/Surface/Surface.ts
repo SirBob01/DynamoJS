@@ -21,7 +21,6 @@ class Surface {
     this.canvas.height = h;
 
     this.surface = this.canvas.getContext('2d')!;
-    this.surface.imageSmoothingEnabled = false;
   }
 
   /**
@@ -65,6 +64,7 @@ class Surface {
   subsurface(aabb: AABB, center = false) {
     const sub = new Surface(aabb.dim.x, aabb.dim.y);
     const target = center ? aabb.min() : aabb.center;
+    this.surface.imageSmoothingEnabled = false;
     sub.surface.drawImage(
       this.canvas,
       target.x,
@@ -108,6 +108,7 @@ class Surface {
     flip: Vec2D = new Vec2D(1, 1),
     center = true
   ) {
+    this.surface.imageSmoothingEnabled = false;
     this.surface.globalCompositeOperation = blend;
     this.surface.globalAlpha = opacity;
     this.surface.scale(flip.x, flip.y);
@@ -155,6 +156,7 @@ class Surface {
       // Unless Sprite could not load image of course...
       return;
     }
+    this.surface.imageSmoothingEnabled = false;
     this.surface.globalCompositeOperation = blend;
     this.surface.globalAlpha = opacity;
     this.surface.scale(flip.x, flip.y);

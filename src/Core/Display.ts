@@ -6,7 +6,9 @@ import { Surface } from '../Surface';
 type ResizeListener = (width: number, height: number) => void;
 
 class Display extends Surface {
+  private container: HTMLElement;
   private resize_listeners: ResizeListener[];
+  private fullscreen: boolean;
 
   /**
    * Primary display surface.
@@ -17,7 +19,10 @@ class Display extends Surface {
   constructor(container: HTMLElement) {
     super(container.clientWidth, container.clientHeight);
     container.appendChild(this.canvas);
+
+    this.container = container;
     this.resize_listeners = [];
+    this.fullscreen = false;
 
     // Listen for canvas resizing
     const resizeObserver = new ResizeObserver(() => {
@@ -28,6 +33,12 @@ class Display extends Surface {
       });
     });
     resizeObserver.observe(container);
+
+    // Listener for fullscreen toggle
+    this.container.addEventListener('fullscreenchange', (event) => {
+      const { clientWidth, clientHeight } = container;
+      this.set_size(clientWidth, clientHeight);
+    });
   }
 
   /**
@@ -53,6 +64,27 @@ class Display extends Surface {
     if (index > -1) {
       this.resize_listeners.splice(index, 1);
     }
+  }
+
+  /**
+   * Turn on fullscreen mode
+   */
+  set_fullscreen(flag: boolean) {
+    this.fullscreen = flag;
+    if (flag) {
+      this.container.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  /**
+   * Tests if fullscreen mode is toggled on
+   *
+   * @returns Fullscreen?
+   */
+  is_fullscreen() {
+    return this.fullscreen;
   }
 }
 

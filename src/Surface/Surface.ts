@@ -117,10 +117,7 @@ class Surface {
     if (!center) {
       point = point.add(aabb.dim.scale(0.5));
     }
-    this.surface.translate(
-      Math.round(point.x * flip.x),
-      Math.round(point.y * flip.y)
-    );
+    this.surface.translate(point.x * flip.x, point.y * flip.y);
     this.surface.rotate(angle);
     this.surface.drawImage(
       src.canvas,
@@ -174,10 +171,7 @@ class Surface {
     if (!center) {
       point = point.add(dim.scale(0.5));
     }
-    this.surface.translate(
-      Math.round(point.x * flip.x),
-      Math.round(point.y * flip.y)
-    );
+    this.surface.translate(point.x * flip.x, point.y * flip.y);
     this.surface.rotate(angle);
     this.surface.drawImage(
       sprite.img,

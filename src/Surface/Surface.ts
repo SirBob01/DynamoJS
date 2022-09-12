@@ -67,14 +67,14 @@ class Surface {
     this.surface.imageSmoothingEnabled = false;
     sub.surface.drawImage(
       this.canvas,
-      target.x,
-      target.y,
-      aabb.dim.x,
-      aabb.dim.y,
+      Math.floor(target.x),
+      Math.floor(target.y),
+      Math.floor(aabb.dim.x),
+      Math.floor(aabb.dim.y),
       0,
       0,
-      aabb.dim.x,
-      aabb.dim.y
+      Math.floor(aabb.dim.x),
+      Math.floor(aabb.dim.y)
     );
     return sub;
   }
@@ -121,10 +121,10 @@ class Surface {
     this.surface.rotate(angle);
     this.surface.drawImage(
       src.canvas,
-      -aabb.dim.x / 2,
-      -aabb.dim.y / 2,
-      aabb.dim.x,
-      aabb.dim.y
+      Math.floor(-aabb.dim.x / 2),
+      Math.floor(-aabb.dim.y / 2),
+      Math.floor(aabb.dim.x),
+      Math.floor(aabb.dim.y)
     );
     this.surface.setTransform(1, 0, 0, 1, 0, 0);
     this.surface.globalAlpha = 1.0;
@@ -175,14 +175,14 @@ class Surface {
     this.surface.rotate(angle);
     this.surface.drawImage(
       sprite.img,
-      frame.x,
-      frame.y,
-      sprite.size.x,
-      sprite.size.y,
-      -dim.x / 2,
-      -dim.y / 2,
-      dim.x,
-      dim.y
+      Math.floor(frame.x),
+      Math.floor(frame.y),
+      Math.floor(sprite.size.x),
+      Math.floor(sprite.size.y),
+      Math.floor(-dim.x / 2),
+      Math.floor(-dim.y / 2),
+      Math.floor(dim.x),
+      Math.floor(dim.y)
     );
     this.surface.setTransform(1, 0, 0, 1, 0, 0);
     this.surface.globalAlpha = 1.0;

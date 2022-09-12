@@ -67,14 +67,14 @@ class Surface {
     this.surface.imageSmoothingEnabled = false;
     sub.surface.drawImage(
       this.canvas,
-      Math.floor(target.x),
-      Math.floor(target.y),
-      Math.floor(aabb.dim.x),
-      Math.floor(aabb.dim.y),
+      Math.round(target.x),
+      Math.round(target.y),
+      Math.round(aabb.dim.x),
+      Math.round(aabb.dim.y),
       0,
       0,
-      Math.floor(aabb.dim.x),
-      Math.floor(aabb.dim.y)
+      Math.round(aabb.dim.x),
+      Math.round(aabb.dim.y)
     );
     return sub;
   }
@@ -118,16 +118,16 @@ class Surface {
       point = point.add(aabb.dim.scale(0.5));
     }
     this.surface.translate(
-      Math.floor(point.x * flip.x),
-      Math.floor(point.y * flip.y)
+      Math.round(point.x * flip.x),
+      Math.round(point.y * flip.y)
     );
     this.surface.rotate(angle);
     this.surface.drawImage(
       src.canvas,
-      Math.floor(-aabb.dim.x / 2),
-      Math.floor(-aabb.dim.y / 2),
-      Math.floor(aabb.dim.x),
-      Math.floor(aabb.dim.y)
+      Math.round(-aabb.dim.x / 2),
+      Math.round(-aabb.dim.y / 2),
+      Math.round(aabb.dim.x),
+      Math.round(aabb.dim.y)
     );
     this.surface.setTransform(1, 0, 0, 1, 0, 0);
     this.surface.globalAlpha = 1.0;
@@ -175,20 +175,20 @@ class Surface {
       point = point.add(dim.scale(0.5));
     }
     this.surface.translate(
-      Math.floor(point.x * flip.x),
-      Math.floor(point.y * flip.y)
+      Math.round(point.x * flip.x),
+      Math.round(point.y * flip.y)
     );
     this.surface.rotate(angle);
     this.surface.drawImage(
       sprite.img,
-      Math.floor(frame.x),
-      Math.floor(frame.y),
-      Math.floor(sprite.size.x),
-      Math.floor(sprite.size.y),
-      Math.floor(-dim.x / 2),
-      Math.floor(-dim.y / 2),
-      Math.floor(dim.x),
-      Math.floor(dim.y)
+      Math.round(frame.x),
+      Math.round(frame.y),
+      Math.round(sprite.size.x),
+      Math.round(sprite.size.y),
+      Math.round(-dim.x / 2),
+      Math.round(-dim.y / 2),
+      Math.round(dim.x),
+      Math.round(dim.y)
     );
     this.surface.setTransform(1, 0, 0, 1, 0, 0);
     this.surface.globalAlpha = 1.0;

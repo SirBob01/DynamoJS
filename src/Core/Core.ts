@@ -4,9 +4,24 @@ import { Input } from './Input';
 import { Jukebox } from './Jukebox';
 
 class Core {
+  /**
+   * Main display surface
+   */
   readonly display: Display;
+
+  /**
+   * Audio engine
+   */
   readonly audio: Jukebox;
+
+  /**
+   * Input handler
+   */
   readonly input: Input;
+
+  /**
+   * Clock
+   */
   readonly clock: Clock;
 
   /**
@@ -16,10 +31,7 @@ class Core {
     this.display = new Display(container);
     this.audio = new Jukebox();
     this.input = new Input();
-    this.clock = {
-      dt: 0,
-      dt_cap: 100, // Protect integration from breaking
-    };
+    this.clock = { dt: 0, dt_cap: 100, elapsed: 0 };
   }
 }
 

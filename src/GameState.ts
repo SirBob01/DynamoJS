@@ -4,8 +4,19 @@ import { Core } from './Core';
  * State information for transitions
  */
 interface TransitionInformation {
+  /**
+   * Next state
+   */
   next: GameState | null;
+
+  /**
+   * Kill the previous state
+   */
   kill: boolean;
+
+  /**
+   * Transitioning?
+   */
   transition: boolean;
 }
 

@@ -4,7 +4,14 @@ import { ColorGradient } from './ColorGradient';
 import { Sprite } from './Sprite';
 
 class Surface {
+  /**
+   * HTML canvas target
+   */
   canvas: HTMLCanvasElement;
+
+  /**
+   * Rendering context
+   */
   surface: CanvasRenderingContext2D;
 
   /**

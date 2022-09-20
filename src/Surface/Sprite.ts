@@ -6,19 +6,36 @@ class Sprite {
   private max_frames: number;
   private on_frame: (frame: number) => void;
   private on_finish: () => void;
+
+  /**
+   * Source image element
+   */
   readonly img: HTMLImageElement;
+
+  /**
+   * Local image coordinates of the animation frames
+   */
   readonly frames: Vec2D[];
+
+  /**
+   * Size of an individual sprite animation frame
+   */
   readonly size: Vec2D;
+
+  /**
+   * Current frame index
+   */
   current_frame: number;
 
   /**
    * An animated sprite from an image file.
    *
-   * @param file      Filepath to the target image
-   * @param frame_x   Width of each frame
-   * @param frame_y   Height of each frame
-   * @param nframes   Maximum number of frames
-   * @param callback  On-load callback function
+   * @param file     Filepath to the target image
+   * @param frame_x  Width of each frame
+   * @param frame_y  Height of each frame
+   * @param nframes  Maximum number of frames
+   * @param on_load  On-load callback function
+   * @param on_error On-error callback function
    * @return Sprite object
    */
   private constructor(

@@ -57,6 +57,7 @@ class Engine {
    * Persistently run the application.
    */
   run() {
+    const start_time = performance.now();
     let last_time = 0;
     const callback = (elapsed: number) => {
       this.core.clock.dt = clamp(
@@ -64,6 +65,7 @@ class Engine {
         0,
         this.core.clock.dt_cap
       );
+      this.core.clock.elapsed = elapsed - start_time;
       last_time = elapsed;
       this.tick();
 

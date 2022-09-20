@@ -7,7 +7,15 @@ import { Vec2D } from '../Math';
  */
 interface LinearGradient {
   type: 'linear';
+
+  /**
+   * Start position of the gradient
+   */
   start: Vec2D;
+
+  /**
+   * End position of the gradient
+   */
   end: Vec2D;
 }
 
@@ -16,14 +24,34 @@ interface LinearGradient {
  */
 interface RadialGradient {
   type: 'radial';
+
+  /**
+   * Inner radial center
+   */
   in_pos: Vec2D;
+
+  /**
+   * Outer radial center
+   */
   out_pos: Vec2D;
+
+  /**
+   * Inner radius
+   */
   in_r: number;
+
+  /**
+   * Outer radius
+   */
   out_r: number;
 }
 
 class ColorGradient {
   readonly grad: CanvasGradient;
+
+  /**
+   * Alpha value between [0, 255]
+   */
   a: number;
 
   /**
@@ -69,7 +97,7 @@ class ColorGradient {
    * Set a color at a position in the gradient.
    *
    * @param color Target color value
-   * @param t    Position in gradient between [0, 1]
+   * @param t     Position in gradient between [0, 1]
    */
   add_value(color: Color, t: number) {
     this.grad.addColorStop(t, color.get());

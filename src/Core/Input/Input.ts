@@ -1,10 +1,18 @@
-import { Vec2D } from '../Math';
+import { Vec2D } from '../../Math';
 
 class Input {
   private state: Map<string, boolean>;
   private pressed: Map<string, boolean>;
   private released: Map<string, boolean>;
+
+  /**
+   * Screen-space mouse position
+   */
   readonly mouse: Vec2D;
+
+  /**
+   * Unregister all input handlers
+   */
   unregister_handlers: () => void;
 
   /**

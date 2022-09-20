@@ -1,9 +1,24 @@
 import { clamp, lerp } from '../Utils';
 
 class Color {
+  /**
+   * Red channel
+   */
   r: number;
+
+  /**
+   * Blue channel
+   */
   g: number;
+
+  /**
+   * Green channel
+   */
   b: number;
+
+  /**
+   * Alpha channel
+   */
   a: number;
 
   /**

@@ -1,43 +1,20 @@
-import { Vec2D } from '../Math';
-
-/**
- * Audio track reference for adjustable settings
- */
-interface AudioTrackSettings {
-  volume: number;
-  position: Vec2D;
-}
-
-/**
- * Audio track meta information
- */
-interface AudioTrack {
-  media: HTMLAudioElement;
-  loops: number;
-  fadein: number;
-  start: boolean;
-  skipped: boolean;
-  source_node: MediaElementAudioSourceNode;
-  panner_node: PannerNode;
-  gain_node: GainNode;
-  settings: AudioTrackSettings;
-}
-
-/**
- * A stream of long audio tracks, like music or dialogue
- */
-interface AudioStream {
-  max_volume: number;
-  volume: number;
-  tracks: AudioTrack[];
-  is_playing: boolean;
-}
+import { Vec2D } from '../../Math';
+import { AudioStream } from './AudioStream';
+import { AudioTrack } from './AudioTrack';
 
 class Jukebox {
   private context: AudioContext;
   private sounds: Map<string, AudioBuffer>;
   private streams: Map<string, AudioStream>;
+
+  /**
+   * Global volume level for the application
+   */
   volume: number;
+
+  /**
+   * Maximum possible distance between an audio source and the listener
+   */
   max_distance: number;
 
   /**
@@ -129,7 +106,6 @@ class Jukebox {
    */
   create_stream(stream: string) {
     this.streams.set(stream, {
-      max_volume: 1.0,
       volume: 1.0,
       tracks: [],
       is_playing: true,
@@ -281,7 +257,7 @@ class Jukebox {
         // Set fade effects
         current.gain_node.gain.value = 0;
         current.gain_node.gain.linearRampToValueAtTime(
-          current.settings.volume * this.volume,
+          current.settings.volume * this.volume * stream.volume,
           this.context.currentTime + current.fadein
         );
         current.media.play();
@@ -308,4 +284,3 @@ class Jukebox {
 }
 
 export { Jukebox };
-export type { AudioTrackSettings, AudioStream };

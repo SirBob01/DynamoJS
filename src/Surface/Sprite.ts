@@ -21,12 +21,13 @@ class Sprite {
    * @param callback  On-load callback function
    * @return Sprite object
    */
-  constructor(
+  private constructor(
     file: string,
     frame_x = 0,
     frame_y = 0,
     nframes = 0,
-    callback: (sprite: Sprite) => void = () => {}
+    on_load: () => void,
+    on_error: () => void
   ) {
     this.accumulator = 0;
     this.img = new Image();
@@ -62,14 +63,37 @@ class Sprite {
           this.frames.push(new Vec2D(i * this.size.x, j * this.size.y));
         }
       }
-      // Workaround for asynchronous load
-      if (callback) {
-        callback(this);
+      on_load();
+    };
+    this.img.onerror = on_error;
+  }
+
+  /**
+   * Create a new sprite, returning a promise
+   *
+   * @param file      Filepath to the target image
+   * @param frame_x   Width of each frame
+   * @param frame_y   Height of each frame
+   * @param nframes   Maximum number of frames
+   * @return Promise to a Sprite object
+   */
+  static create(file: string, frame_x = 0, frame_y = 0, nframes = 0) {
+    return new Promise(
+      (resolve: (sprite: Sprite) => void, reject: (error: Error) => void) => {
+        const sprite = new Sprite(
+          file,
+          frame_x,
+          frame_y,
+          nframes,
+          () => {
+            resolve(sprite);
+          },
+          () => {
+            reject(new Error(`Could not load sprite source file \`${file}\``));
+          }
+        );
       }
-    };
-    this.img.onerror = () => {
-      throw new Error('Could not load image file ' + file);
-    };
+    );
   }
 
   /**

@@ -1,6 +1,8 @@
 import { Vec2D } from '../Math';
 
 class Sprite {
+  private static path_prefix = '';
+
   private accumulator: number;
   private finished: boolean;
   private max_frames: number;
@@ -48,7 +50,7 @@ class Sprite {
   ) {
     this.accumulator = 0;
     this.img = new Image();
-    this.img.src = file;
+    this.img.src = `${Sprite.path_prefix}${file}`;
     this.frames = [];
     this.on_frame = () => {};
     this.on_finish = () => {};
@@ -83,6 +85,13 @@ class Sprite {
       on_load();
     };
     this.img.onerror = on_error;
+  }
+
+  /**
+   * Set the path prefix for where to load image files
+   */
+  static set_path_prefix(prefix: string) {
+    Sprite.path_prefix = prefix;
   }
 
   /**

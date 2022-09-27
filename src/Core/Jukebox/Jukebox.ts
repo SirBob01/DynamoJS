@@ -3,6 +3,8 @@ import { AudioStream } from './AudioStream';
 import { AudioTrack } from './AudioTrack';
 
 class Jukebox {
+  private static path_prefix = '';
+
   private context: AudioContext;
   private sounds: Map<string, AudioBuffer>;
   private streams: Map<string, AudioStream>;
@@ -32,12 +34,20 @@ class Jukebox {
   }
 
   /**
+   * Set the path prefix for where to load audio files
+   */
+  static set_path_prefix(prefix: string) {
+    Jukebox.path_prefix = prefix;
+  }
+
+  /**
    * Load a sound from a URL and map it to an ID.
    *
    * @param url Valid URL to an audio file
    * @param id  Key value for mapping
    */
   load_sound(url: string) {
+    const fullpath = `${Jukebox.path_prefix}${url}`;
     const request = new XMLHttpRequest();
     request.responseType = 'arraybuffer';
     request.onreadystatechange = () => {
@@ -45,15 +55,15 @@ class Jukebox {
         this.context.decodeAudioData(
           request.response,
           (buffer) => {
-            this.sounds.set(url, buffer);
+            this.sounds.set(fullpath, buffer);
           },
           (err) => {
-            throw new Error('Error decoding ' + url + ': ' + err);
+            throw new Error('Error decoding ' + fullpath + ': ' + err);
           }
         );
       }
     };
-    request.open('GET', url, true);
+    request.open('GET', fullpath, true);
     request.send();
   }
 
@@ -65,9 +75,10 @@ class Jukebox {
    * @param position Location of the sound relative to origin
    */
   play_sound(url: string, volume: number, position: Vec2D) {
-    const buffer = this.sounds.get(url);
+    const fullpath = `${Jukebox.path_prefix}${url}`;
+    const buffer = this.sounds.get(fullpath);
     if (!buffer) {
-      this.load_sound(url);
+      this.load_sound(fullpath);
       return;
     }
 
@@ -161,7 +172,7 @@ class Jukebox {
         position,
       },
     };
-    media.src = url;
+    media.src = `${Jukebox.path_prefix}${url}`;
     media.crossOrigin = 'anonymous';
 
     // Set node values

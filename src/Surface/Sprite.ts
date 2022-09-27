@@ -50,7 +50,7 @@ class Sprite {
   ) {
     this.accumulator = 0;
     this.img = new Image();
-    this.img.src = `${Sprite.path_prefix}${file}`;
+    this.img.src = file;
     this.frames = [];
     this.on_frame = () => {};
     this.on_finish = () => {};
@@ -97,17 +97,18 @@ class Sprite {
   /**
    * Create a new sprite, returning a promise
    *
-   * @param file      Filepath to the target image
-   * @param frame_x   Width of each frame
-   * @param frame_y   Height of each frame
-   * @param nframes   Maximum number of frames
+   * @param file            Filepath to the target image
+   * @param frame_x         Width of each frame
+   * @param frame_y         Height of each frame
+   * @param nframes         Maximum number of frames
+   * @param include_prefix  Include the prefix
    * @return Promise to a Sprite object
    */
-  static create(file: string, frame_x = 0, frame_y = 0, nframes = 0) {
+  static create(file: string, frame_x = 0, frame_y = 0, nframes = 0, include_prefix: boolean) {
     return new Promise(
       (resolve: (sprite: Sprite) => void, reject: (error: Error) => void) => {
         const sprite = new Sprite(
-          file,
+          include_prefix ? `${Sprite.path_prefix}${file}` : file,
           frame_x,
           frame_y,
           nframes,

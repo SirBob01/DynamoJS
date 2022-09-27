@@ -101,10 +101,16 @@ class Sprite {
    * @param frame_x         Width of each frame
    * @param frame_y         Height of each frame
    * @param nframes         Maximum number of frames
-   * @param include_prefix  Include the prefix
+   * @param include_prefix  Include the prefix in the filename
    * @return Promise to a Sprite object
    */
-  static create(file: string, frame_x = 0, frame_y = 0, nframes = 0, include_prefix: boolean) {
+  static create(
+    file: string,
+    frame_x = 0,
+    frame_y = 0,
+    nframes = 0,
+    include_prefix = true
+  ) {
     return new Promise(
       (resolve: (sprite: Sprite) => void, reject: (error: Error) => void) => {
         const sprite = new Sprite(

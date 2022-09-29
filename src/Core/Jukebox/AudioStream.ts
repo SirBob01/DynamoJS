@@ -17,7 +17,7 @@ interface AudioStream {
   /**
    * Is the stream playing anything?
    */
-  is_playing: boolean;
+  isPlaying: boolean;
 }
 
 export type { AudioStream };

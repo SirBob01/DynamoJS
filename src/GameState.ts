@@ -21,7 +21,7 @@ interface TransitionInformation {
 }
 
 abstract class GameState {
-  private transition_info: TransitionInformation;
+  private transitionInfo: TransitionInformation;
 
   /**
    * A game state. User logic should be implemented
@@ -30,7 +30,7 @@ abstract class GameState {
    * @return New GameState object
    */
   constructor() {
-    this.transition_info = {
+    this.transitionInfo = {
       next: null,
       kill: false,
       transition: false,
@@ -43,10 +43,10 @@ abstract class GameState {
    * @param next GameState after transitioning
    * @param kill Should the current state be killed?
    */
-  set_next(next: GameState | null = null, kill = true) {
-    this.transition_info.next = next;
-    this.transition_info.kill = kill;
-    this.transition_info.transition = true;
+  setNext(next: GameState | null = null, kill = true) {
+    this.transitionInfo.next = next;
+    this.transitionInfo.kill = kill;
+    this.transitionInfo.transition = true;
   }
 
   /**
@@ -54,8 +54,8 @@ abstract class GameState {
    *
    * @returns Next state
    */
-  get_transition_info() {
-    return { ...this.transition_info };
+  getTransitionInfo() {
+    return { ...this.transitionInfo };
   }
 
   /**
@@ -64,7 +64,7 @@ abstract class GameState {
    *
    * @param core Core modules passed by Engine
    */
-  abstract on_entry(core: Core): void;
+  abstract onEntry(core: Core): void;
 
   /**
    * Exit the state. This can be overriden.
@@ -72,7 +72,7 @@ abstract class GameState {
    *
    * @param core Core modules passed by Engine
    */
-  abstract on_exit(core: Core): void;
+  abstract onExit(core: Core): void;
 
   /**
    * Update the state at every frame. This can be overriden.

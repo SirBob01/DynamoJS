@@ -28,22 +28,22 @@ interface RadialGradient {
   /**
    * Inner radial center
    */
-  in_pos: Vec2D;
+  inPos: Vec2D;
 
   /**
    * Outer radial center
    */
-  out_pos: Vec2D;
+  outPos: Vec2D;
 
   /**
    * Inner radius
    */
-  in_r: number;
+  inR: number;
 
   /**
    * Outer radius
    */
-  out_r: number;
+  outR: number;
 }
 
 class ColorGradient {
@@ -60,8 +60,8 @@ class ColorGradient {
    *
    * The parameters are dependent on gradient type:
    *     "linear" - {start (Vec2D), end (Vec2D)}
-   *     "radial" - {in_pos (Vec2D), in_r (Number),
-   *                 out_pos (Vec2D), out_r (Number)}
+   *     "radial" - {inPos (Vec2D), inR (Number),
+   *                 outPos (Vec2D), outR (Number)}
    *
    * @param surface    Target Surface object
    * @param parameters Gradient type-dependent parameters
@@ -82,12 +82,12 @@ class ColorGradient {
       );
     } else {
       this.grad = surface.surface.createRadialGradient(
-        parameters.in_pos.x,
-        parameters.in_pos.y,
-        parameters.in_r,
-        parameters.out_pos.x,
-        parameters.out_pos.y,
-        parameters.out_r
+        parameters.inPos.x,
+        parameters.inPos.y,
+        parameters.inR,
+        parameters.outPos.x,
+        parameters.outPos.y,
+        parameters.outR
       );
     }
     this.a = alpha;
@@ -99,7 +99,7 @@ class ColorGradient {
    * @param color Target color value
    * @param t     Position in gradient between [0, 1]
    */
-  add_value(color: Color, t: number) {
+  addValue(color: Color, t: number) {
     this.grad.addColorStop(t, color.get());
   }
 

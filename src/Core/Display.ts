@@ -7,7 +7,7 @@ type ResizeListener = (width: number, height: number) => void;
 
 class Display extends Surface {
   private container: HTMLElement;
-  private resize_listener: ResizeListener;
+  private resizeListener: ResizeListener;
   private fullscreen: boolean;
 
   /**
@@ -21,22 +21,22 @@ class Display extends Surface {
     container.appendChild(this.canvas);
 
     this.container = container;
-    this.resize_listener = () => {};
+    this.resizeListener = () => {};
     this.fullscreen = false;
 
     // Listen for canvas resizing
     const resizeObserver = new ResizeObserver(() => {
       const { clientWidth, clientHeight } = container;
-      this.set_size(clientWidth, clientHeight);
-      this.resize_listener(clientWidth, clientHeight);
+      this.setSize(clientWidth, clientHeight);
+      this.resizeListener(clientWidth, clientHeight);
     });
     resizeObserver.observe(container);
 
     // Listener for fullscreen toggle
     this.container.addEventListener('fullscreenchange', (event) => {
       const { clientWidth, clientHeight } = container;
-      this.set_size(clientWidth, clientHeight);
-      this.resize_listener(clientWidth, clientHeight);
+      this.setSize(clientWidth, clientHeight);
+      this.resizeListener(clientWidth, clientHeight);
     });
   }
 
@@ -47,21 +47,21 @@ class Display extends Surface {
    *
    * @param listener Listener function
    */
-  set_resize_listener(listener: ResizeListener) {
-    this.resize_listener = listener;
+  setResizeListener(listener: ResizeListener) {
+    this.resizeListener = listener;
   }
 
   /**
    * Remove a registered resize listener function, if it exists.
    */
-  remove_resize_listener() {
-    this.resize_listener = () => {};
+  removeResizeListener() {
+    this.resizeListener = () => {};
   }
 
   /**
    * Turn on fullscreen mode
    */
-  set_fullscreen(flag: boolean) {
+  setFullscreen(flag: boolean) {
     this.fullscreen = flag;
     if (flag) {
       this.container.requestFullscreen();
@@ -75,7 +75,7 @@ class Display extends Surface {
    *
    * @returns Fullscreen?
    */
-  is_fullscreen() {
+  isFullscreen() {
     return this.fullscreen;
   }
 }

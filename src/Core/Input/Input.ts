@@ -13,7 +13,7 @@ class Input {
   /**
    * Unregister all input handlers
    */
-  unregister_handlers: () => void;
+  unregisterHandlers: () => void;
 
   /**
    * The main input handler.
@@ -24,7 +24,7 @@ class Input {
     this.released = new Map();
 
     this.mouse = new Vec2D(0, 0);
-    this.unregister_handlers = () => {};
+    this.unregisterHandlers = () => {};
   }
 
   /**
@@ -32,12 +32,12 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key         Target input to be tested
-   * @param ignore_case Ignore the capitalization of the key
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
    * @return Is the input pressed or released?
    */
-  get_state(key: string, ignore_case = false) {
-    if (ignore_case) {
+  getState(key: string, ignoreCase = false) {
+    if (ignoreCase) {
       const upper = key.toUpperCase();
       return (this.state.get(key) || this.state.get(upper)) ?? false;
     }
@@ -49,12 +49,12 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key         Target input to be tested
-   * @param ignore_case Ignore the capitalization of the key
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
    * @return Is the input pressed this frame?
    */
-  get_pressed(key: string, ignore_case = false) {
-    if (ignore_case) {
+  getPressed(key: string, ignoreCase = false) {
+    if (ignoreCase) {
       const upper = key.toUpperCase();
       return (this.pressed.get(key) || this.pressed.get(upper)) ?? false;
     }
@@ -66,12 +66,12 @@ class Input {
    * Alphanumeric keys range from a - z, 0 - 9.
    * Mouse buttons range from Mouse0 - Mouse2.
    *
-   * @param key         Target input to be tested
-   * @param ignore_case Ignore the capitalization of the key
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
    * @return Is the input released this frame?
    */
-  get_released(key: string, ignore_case = false) {
-    if (ignore_case) {
+  getReleased(key: string, ignoreCase = false) {
+    if (ignoreCase) {
       const upper = key.toUpperCase();
       return (this.released.get(key) || this.released.get(upper)) ?? false;
     }
@@ -112,7 +112,7 @@ class Input {
     };
 
     // Handler to prevent opening menu when right-clicking the canvas
-    const canvas_contextmenu = (event: MouseEvent) => {
+    const canvasContextmenu = (event: MouseEvent) => {
       event.preventDefault();
     };
 
@@ -122,16 +122,16 @@ class Input {
     document.addEventListener('mousedown', mousedown);
     document.addEventListener('mouseup', mouseup);
     document.addEventListener('mousemove', mousemove);
-    canvas.addEventListener('contextmenu', canvas_contextmenu, false);
+    canvas.addEventListener('contextmenu', canvasContextmenu, false);
 
     // Store a function to unregister everything
-    this.unregister_handlers = () => {
+    this.unregisterHandlers = () => {
       document.removeEventListener('keydown', keydown);
       document.removeEventListener('keyup', keyup);
       document.removeEventListener('mousedown', mousedown);
       document.removeEventListener('mouseup', mouseup);
       document.removeEventListener('mousemove', mousemove);
-      canvas.removeEventListener('contextmenu', canvas_contextmenu, false);
+      canvas.removeEventListener('contextmenu', canvasContextmenu, false);
     };
   }
 

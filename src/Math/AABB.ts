@@ -97,10 +97,10 @@ class AABB {
   /**
    * Test if a point is within the AABB.
    *
-   * @param point   Test point
+   * @param point Test point
    * @return Is the point in bounds?
    */
-  is_in_bounds(point: Vec2D) {
+  isInBounds(point: Vec2D) {
     const min = this.min();
     const max = this.max();
 
@@ -112,18 +112,18 @@ class AABB {
   /**
    * Test if the AABB is colliding with another.
    *
-   * @param other   Paired AABB
+   * @param other Paired AABB
    * @return Are bounding boxes colliding?
    */
-  is_colliding(other: AABB) {
+  isColliding(other: AABB) {
     const min = this.min();
     const max = this.max();
 
-    const other_min = other.min();
-    const other_max = other.max();
+    const otherMin = other.min();
+    const otherMax = other.max();
 
-    const hor = other_max.x > min.x && other_min.x < max.x;
-    const ver = other_max.y > min.y && other_min.y < max.y;
+    const hor = otherMax.x > min.x && otherMin.x < max.x;
+    const ver = otherMax.y > min.y && otherMin.y < max.y;
     return hor && ver;
   }
 }

@@ -31,7 +31,7 @@ class Core {
     this.display = new Display(container);
     this.audio = new Jukebox();
     this.input = new Input();
-    this.clock = { dt: 0, dt_cap: 100, elapsed: 0 };
+    this.clock = { dt: 0, dtCap: 100, elapsed: 0 };
   }
 }
 

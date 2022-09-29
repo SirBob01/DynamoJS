@@ -78,7 +78,7 @@ class Vec2D {
    *
    * @return Squared length
    */
-  length_sq() {
+  lengthSq() {
     return this.x * this.x + this.y * this.y;
   }
 
@@ -88,7 +88,7 @@ class Vec2D {
    * @return Cartesian length
    */
   length() {
-    return Math.sqrt(this.length_sq());
+    return Math.sqrt(this.lengthSq());
   }
 
   /**
@@ -115,7 +115,7 @@ class Vec2D {
    *
    * @return Comma-separated values
    */
-  to_string() {
+  toString() {
     return this.x + ',' + this.y;
   }
 
@@ -125,7 +125,7 @@ class Vec2D {
    * @param string Comma-separated values
    * @return New Vec2D object
    */
-  static from_string(string: string) {
+  static fromString(string: string) {
     const vals = string.split(',');
     return new Vec2D(parseFloat(vals[0]), parseFloat(vals[1]));
   }

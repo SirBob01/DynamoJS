@@ -31,7 +31,7 @@ class Segment {
    * @param segment The other segment to test
    * @return Are the segments parallel?
    */
-  is_parallel(segment: Segment) {
+  isParallel(segment: Segment) {
     const m1 = (this.stop.y - this.start.y) / (this.stop.x - this.start.x);
     const m2 =
       (segment.stop.y - segment.start.y) / (segment.stop.x - segment.start.x);

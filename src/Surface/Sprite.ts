@@ -1,13 +1,13 @@
 import { Vec2D } from '../Math';
 
 class Sprite {
-  private static path_prefix = '';
+  private static pathPrefix = '';
 
   private accumulator: number;
   private finished: boolean;
-  private max_frames: number;
-  private on_frame: (frame: number) => void;
-  private on_finish: () => void;
+  private maxFrames: number;
+  private onFrame: (frame: number) => void;
+  private onFinish: () => void;
 
   /**
    * Source image element
@@ -27,96 +27,96 @@ class Sprite {
   /**
    * Current frame index
    */
-  current_frame: number;
+  currentFrame: number;
 
   /**
    * An animated sprite from an image file.
    *
-   * @param file     Filepath to the target image
-   * @param frame_x  Width of each frame
-   * @param frame_y  Height of each frame
-   * @param nframes  Maximum number of frames
-   * @param on_load  On-load callback function
-   * @param on_error On-error callback function
+   * @param file    Filepath to the target image
+   * @param frameX  Width of each frame
+   * @param frameY  Height of each frame
+   * @param nframes Maximum number of frames
+   * @param onLoad  On-load callback function
+   * @param onError On-error callback function
    * @return Sprite object
    */
   private constructor(
     file: string,
-    frame_x = 0,
-    frame_y = 0,
+    frameX = 0,
+    frameY = 0,
     nframes = 0,
-    on_load: () => void,
-    on_error: () => void
+    onLoad: () => void,
+    onError: () => void
   ) {
     this.accumulator = 0;
     this.img = new Image();
     this.img.src = file;
     this.frames = [];
-    this.on_frame = () => {};
-    this.on_finish = () => {};
+    this.onFrame = () => {};
+    this.onFinish = () => {};
 
-    this.current_frame = 0;
+    this.currentFrame = 0;
     this.finished = false;
-    this.max_frames = nframes;
+    this.maxFrames = nframes;
     this.size = new Vec2D(0, 0);
 
     // TODO: Synchronize image loading... pain in the ass
     this.img.onload = () => {
-      if (frame_x == 0 || frame_y == 0) {
+      if (frameX == 0 || frameY == 0) {
         this.size.x = this.img.width;
         this.size.y = this.img.height;
       } else {
-        this.size.x = frame_x;
-        this.size.y = frame_y;
+        this.size.x = frameX;
+        this.size.y = frameY;
       }
 
-      const hor_frames = this.img.width / this.size.x;
-      const ver_frames = this.img.height / this.size.y;
-      if (this.max_frames == 0) {
-        this.max_frames = hor_frames * ver_frames;
+      const horFrames = this.img.width / this.size.x;
+      const verFrames = this.img.height / this.size.y;
+      if (this.maxFrames == 0) {
+        this.maxFrames = horFrames * verFrames;
       }
 
       // Calculate individual frame coordinates
-      for (let j = 0; j < ver_frames; j++) {
-        for (let i = 0; i < hor_frames; i++) {
+      for (let j = 0; j < verFrames; j++) {
+        for (let i = 0; i < horFrames; i++) {
           this.frames.push(new Vec2D(i * this.size.x, j * this.size.y));
         }
       }
-      on_load();
+      onLoad();
     };
-    this.img.onerror = on_error;
+    this.img.onerror = onError;
   }
 
   /**
    * Set the path prefix for where to load image files
    */
-  static set_path_prefix(prefix: string) {
-    Sprite.path_prefix = prefix;
+  static setPathPrefix(prefix: string) {
+    Sprite.pathPrefix = prefix;
   }
 
   /**
    * Create a new sprite, returning a promise
    *
-   * @param file            Filepath to the target image
-   * @param frame_x         Width of each frame
-   * @param frame_y         Height of each frame
-   * @param nframes         Maximum number of frames
-   * @param include_prefix  Include the prefix in the filename
+   * @param file          Filepath to the target image
+   * @param frameX        Width of each frame
+   * @param frameY        Height of each frame
+   * @param nframes       Maximum number of frames
+   * @param includePrefix Include the prefix in the filename
    * @return Promise to a Sprite object
    */
   static create(
     file: string,
-    frame_x = 0,
-    frame_y = 0,
+    frameX = 0,
+    frameY = 0,
     nframes = 0,
-    include_prefix = true
+    includePrefix = true
   ) {
     return new Promise(
       (resolve: (sprite: Sprite) => void, reject: (error: Error) => void) => {
         const sprite = new Sprite(
-          include_prefix ? `${Sprite.path_prefix}${file}` : file,
-          frame_x,
-          frame_y,
+          includePrefix ? `${Sprite.pathPrefix}${file}` : file,
+          frameX,
+          frameY,
           nframes,
           () => {
             resolve(sprite);
@@ -134,8 +134,8 @@ class Sprite {
    *
    * @param callback Callback method
    */
-  set_on_finish(callback: () => void) {
-    this.on_finish = callback;
+  setOnFinish(callback: () => void) {
+    this.onFinish = callback;
   }
 
   /**
@@ -144,8 +144,8 @@ class Sprite {
    *
    * @param callback Callback method
    */
-  set_on_frame(callback: (frame: number) => void) {
-    this.on_frame = callback;
+  setOnFrame(callback: (frame: number) => void) {
+    this.onFrame = callback;
   }
 
   /**
@@ -159,17 +159,17 @@ class Sprite {
   animate(dt: number, fps: number, loop = false) {
     this.accumulator += dt;
     if (this.accumulator >= 1000.0 / fps) {
-      this.current_frame++;
+      this.currentFrame++;
       this.accumulator = 0;
-      this.on_frame(this.current_frame);
+      this.onFrame(this.currentFrame);
     }
-    if (this.current_frame > this.max_frames - 1) {
+    if (this.currentFrame > this.maxFrames - 1) {
       if (loop) {
-        this.current_frame = 0;
+        this.currentFrame = 0;
       } else {
-        this.current_frame = this.max_frames - 1;
+        this.currentFrame = this.maxFrames - 1;
         this.finished = true;
-        this.on_finish();
+        this.onFinish();
       }
     }
   }
@@ -178,7 +178,7 @@ class Sprite {
    * Restart the animation
    */
   restart() {
-    this.current_frame = 0;
+    this.currentFrame = 0;
     this.finished = false;
   }
 
@@ -189,7 +189,7 @@ class Sprite {
    *
    * @returns Sprite animation finished?
    */
-  is_finished() {
+  isFinished() {
     return this.finished;
   }
 }

@@ -10,7 +10,7 @@ interface Clock {
   /**
    * Maximum value of delta time to protect against integration issues
    */
-  dt_cap: number;
+  dtCap: number;
 
   /**
    * Total amount of time in milliseconds since Engine.run() was called

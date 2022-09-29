@@ -3,7 +3,7 @@ import { AudioStream } from './AudioStream';
 import { AudioTrack } from './AudioTrack';
 
 class Jukebox {
-  private static path_prefix = '';
+  private static pathPrefix = '';
 
   private context: AudioContext;
   private sounds: Map<string, AudioBuffer>;
@@ -17,7 +17,7 @@ class Jukebox {
   /**
    * Maximum possible distance between an audio source and the listener
    */
-  max_distance: number;
+  maxDistance: number;
 
   /**
    * The audio engine.
@@ -27,7 +27,7 @@ class Jukebox {
   constructor() {
     this.context = new AudioContext();
     this.volume = 1.0;
-    this.max_distance = 1000;
+    this.maxDistance = 1000;
 
     this.sounds = new Map();
     this.streams = new Map();
@@ -36,8 +36,8 @@ class Jukebox {
   /**
    * Set the path prefix for where to load audio files
    */
-  static set_path_prefix(prefix: string) {
-    Jukebox.path_prefix = prefix;
+  static setPathPrefix(prefix: string) {
+    Jukebox.pathPrefix = prefix;
   }
 
   /**
@@ -46,8 +46,8 @@ class Jukebox {
    * @param url Valid URL to an audio file
    * @param id  Key value for mapping
    */
-  load_sound(url: string) {
-    const fullpath = `${Jukebox.path_prefix}${url}`;
+  loadSound(url: string) {
+    const fullpath = `${Jukebox.pathPrefix}${url}`;
     const request = new XMLHttpRequest();
     request.responseType = 'arraybuffer';
     request.onreadystatechange = () => {
@@ -74,40 +74,40 @@ class Jukebox {
    * @param volume   Volume of sound between [0, 1]
    * @param position Location of the sound relative to origin
    */
-  play_sound(url: string, volume: number, position: Vec2D) {
-    const fullpath = `${Jukebox.path_prefix}${url}`;
+  playSound(url: string, volume: number, position: Vec2D) {
+    const fullpath = `${Jukebox.pathPrefix}${url}`;
     const buffer = this.sounds.get(fullpath);
     if (!buffer) {
-      this.load_sound(fullpath);
+      this.loadSound(fullpath);
       return;
     }
 
-    const source_node = this.context.createBufferSource();
-    const gain_node = this.context.createGain();
-    const panner_node = this.context.createPanner();
+    const sourceNode = this.context.createBufferSource();
+    const gainNode = this.context.createGain();
+    const pannerNode = this.context.createPanner();
 
-    source_node.connect(panner_node);
-    panner_node.connect(gain_node);
-    gain_node.connect(this.context.destination);
+    sourceNode.connect(pannerNode);
+    pannerNode.connect(gainNode);
+    gainNode.connect(this.context.destination);
 
     // Set initial values
-    source_node.buffer = buffer;
+    sourceNode.buffer = buffer;
 
-    panner_node.panningModel = 'equalpower';
-    panner_node.distanceModel = 'linear';
-    panner_node.refDistance = 1;
-    panner_node.maxDistance = this.max_distance;
-    panner_node.rolloffFactor = 1;
-    panner_node.coneInnerAngle = 360;
-    panner_node.coneOuterAngle = 0;
-    panner_node.coneOuterGain = 0;
+    pannerNode.panningModel = 'equalpower';
+    pannerNode.distanceModel = 'linear';
+    pannerNode.refDistance = 1;
+    pannerNode.maxDistance = this.maxDistance;
+    pannerNode.rolloffFactor = 1;
+    pannerNode.coneInnerAngle = 360;
+    pannerNode.coneOuterAngle = 0;
+    pannerNode.coneOuterGain = 0;
 
-    panner_node.positionX.setValueAtTime(position.x, this.context.currentTime);
-    panner_node.positionZ.setValueAtTime(position.y, this.context.currentTime);
+    pannerNode.positionX.setValueAtTime(position.x, this.context.currentTime);
+    pannerNode.positionZ.setValueAtTime(position.y, this.context.currentTime);
 
-    gain_node.gain.value = volume * this.volume;
+    gainNode.gain.value = volume * this.volume;
 
-    source_node.start(0);
+    sourceNode.start(0);
   }
 
   /**
@@ -115,11 +115,11 @@ class Jukebox {
    *
    * @param stream Name of the stream
    */
-  create_stream(stream: string) {
+  createStream(stream: string) {
     this.streams.set(stream, {
       volume: 1.0,
       tracks: [],
-      is_playing: true,
+      isPlaying: true,
     });
   }
 
@@ -129,7 +129,7 @@ class Jukebox {
    * @param stream
    * @returns Audio stream, if it exists
    */
-  get_stream(stream: string) {
+  getStream(stream: string) {
     return this.streams.get(stream);
   }
 
@@ -144,7 +144,7 @@ class Jukebox {
    * @param position Location of the sound relative to origin
    * @return User-accessible track information
    */
-  queue_stream(
+  queueStream(
     stream: string,
     url: string,
     volume: number,
@@ -163,32 +163,32 @@ class Jukebox {
       start: false,
       skipped: false,
 
-      source_node: this.context.createMediaElementSource(media),
-      panner_node: this.context.createPanner(),
-      gain_node: this.context.createGain(),
+      sourceNode: this.context.createMediaElementSource(media),
+      pannerNode: this.context.createPanner(),
+      gainNode: this.context.createGain(),
 
       settings: {
         volume,
         position,
       },
     };
-    media.src = `${Jukebox.path_prefix}${url}`;
+    media.src = `${Jukebox.pathPrefix}${url}`;
     media.crossOrigin = 'anonymous';
 
     // Set node values
-    track.panner_node.panningModel = 'equalpower';
-    track.panner_node.distanceModel = 'linear';
-    track.panner_node.refDistance = 1;
-    track.panner_node.maxDistance = this.max_distance;
-    track.panner_node.rolloffFactor = 1;
-    track.panner_node.coneInnerAngle = 360;
-    track.panner_node.coneOuterAngle = 0;
-    track.panner_node.coneOuterGain = 0;
+    track.pannerNode.panningModel = 'equalpower';
+    track.pannerNode.distanceModel = 'linear';
+    track.pannerNode.refDistance = 1;
+    track.pannerNode.maxDistance = this.maxDistance;
+    track.pannerNode.rolloffFactor = 1;
+    track.pannerNode.coneInnerAngle = 360;
+    track.pannerNode.coneOuterAngle = 0;
+    track.pannerNode.coneOuterGain = 0;
 
     // Connect audio nodes
-    track.source_node.connect(track.panner_node);
-    track.panner_node.connect(track.gain_node);
-    track.gain_node.connect(this.context.destination);
+    track.sourceNode.connect(track.pannerNode);
+    track.pannerNode.connect(track.gainNode);
+    track.gainNode.connect(this.context.destination);
 
     // Enqueue the track
     const tracks = this.streams.get(stream)?.tracks;
@@ -205,7 +205,7 @@ class Jukebox {
    * @param stream  Name of the stream
    * @param fadeout Fade out time in seconds
    */
-  skip_stream(stream: string, fadeout = 0) {
+  skipStream(stream: string, fadeout = 0) {
     const s = this.streams.get(stream);
     if (!s) {
       throw new Error('"' + stream + '" audio stream does not exist.');
@@ -217,12 +217,12 @@ class Jukebox {
     current.skipped = true;
 
     // Cancel any occurring fades
-    const gain_now = current.gain_node.gain.value;
-    current.gain_node.gain.cancelScheduledValues(this.context.currentTime);
-    current.gain_node.gain.value = gain_now;
+    const gainNow = current.gainNode.gain.value;
+    current.gainNode.gain.cancelScheduledValues(this.context.currentTime);
+    current.gainNode.gain.value = gainNow;
 
     // Fade out
-    current.gain_node.gain.linearRampToValueAtTime(
+    current.gainNode.gain.linearRampToValueAtTime(
       0,
       this.context.currentTime + fadeout
     );
@@ -234,12 +234,12 @@ class Jukebox {
    * @param stream  Name of the stream
    * @param fadeout Fade out time in seconds
    */
-  clear_stream(stream: string, fadeout = 0) {
+  clearStream(stream: string, fadeout = 0) {
     const tracks = this.streams.get(stream)?.tracks;
     if (!tracks) {
       throw new Error('"' + stream + '" audio stream does not exist.');
     }
-    this.skip_stream(stream, fadeout);
+    this.skipStream(stream, fadeout);
     tracks.splice(0, tracks.length);
   }
 
@@ -254,11 +254,11 @@ class Jukebox {
       const current = stream.tracks[0];
 
       // Keep track of position
-      current.panner_node.positionX.setValueAtTime(
+      current.pannerNode.positionX.setValueAtTime(
         current.settings.position.x,
         this.context.currentTime
       );
-      current.panner_node.positionZ.setValueAtTime(
+      current.pannerNode.positionZ.setValueAtTime(
         current.settings.position.y,
         this.context.currentTime
       );
@@ -266,8 +266,8 @@ class Jukebox {
       // Handle starting
       if (!current.start) {
         // Set fade effects
-        current.gain_node.gain.value = 0;
-        current.gain_node.gain.linearRampToValueAtTime(
+        current.gainNode.gain.value = 0;
+        current.gainNode.gain.linearRampToValueAtTime(
           current.settings.volume * this.volume * stream.volume,
           this.context.currentTime + current.fadein
         );
@@ -276,7 +276,7 @@ class Jukebox {
       }
 
       // Handle skipping
-      if (current.skipped && current.gain_node.gain.value == 0) {
+      if (current.skipped && current.gainNode.gain.value == 0) {
         current.media.pause();
         stream.tracks.shift();
       }

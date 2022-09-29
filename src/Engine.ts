@@ -5,23 +5,23 @@ import { clamp } from './Utils';
 class Engine {
   private states: GameState[];
   private running: boolean;
-  private animation_request_id: number;
+  private animationRequestId: number;
   private core: Core;
 
   /**
    * The main DynamoJS engine.
    *
-   * @param container     Container element for the display
-   * @param initial_state Initial state of the application
+   * @param container    Container element for the display
+   * @param initialState Initial state of the application
    * @return New Engine object
    */
-  constructor(container: HTMLElement, initial_state: GameState) {
+  constructor(container: HTMLElement, initialState: GameState) {
     this.core = new Core(container);
-    this.states = [initial_state];
+    this.states = [initialState];
     this.running = true;
-    this.animation_request_id = 0;
+    this.animationRequestId = 0;
 
-    initial_state.on_entry(this.core);
+    initialState.onEntry(this.core);
     this.core.input.poll(this.core.display.canvas);
   }
 
@@ -31,22 +31,22 @@ class Engine {
   tick() {
     this.core.display.clear();
 
-    const current_state = this.states[this.states.length - 1];
-    const transition_info = current_state.get_transition_info();
+    const currentState = this.states[this.states.length - 1];
+    const transitionInfo = currentState.getTransitionInfo();
 
-    if (transition_info.transition) {
-      if (transition_info.kill) {
-        current_state.on_exit(this.core);
+    if (transitionInfo.transition) {
+      if (transitionInfo.kill) {
+        currentState.onExit(this.core);
         this.states.pop();
       } else {
-        transition_info.transition = false;
+        transitionInfo.transition = false;
       }
-      if (transition_info.next) {
-        transition_info.next.on_entry(this.core);
-        this.states.push(transition_info.next);
+      if (transitionInfo.next) {
+        transitionInfo.next.onEntry(this.core);
+        this.states.push(transitionInfo.next);
       }
     } else {
-      current_state.update(this.core);
+      currentState.update(this.core);
     }
     this.core.audio.update();
     this.core.input.refresh();
@@ -57,25 +57,21 @@ class Engine {
    * Persistently run the application.
    */
   run() {
-    const start_time = performance.now();
-    let last_time = 0;
+    const startTime = performance.now();
+    let lastTime = 0;
     const callback = (elapsed: number) => {
-      this.core.clock.dt = clamp(
-        elapsed - last_time,
-        0,
-        this.core.clock.dt_cap
-      );
-      this.core.clock.elapsed = elapsed - start_time;
-      last_time = elapsed;
+      this.core.clock.dt = clamp(elapsed - lastTime, 0, this.core.clock.dtCap);
+      this.core.clock.elapsed = elapsed - startTime;
+      lastTime = elapsed;
       this.tick();
 
       if (this.running) {
-        this.animation_request_id = window.requestAnimationFrame(callback);
-      } else if (this.animation_request_id) {
-        window.cancelAnimationFrame(this.animation_request_id);
+        this.animationRequestId = window.requestAnimationFrame(callback);
+      } else if (this.animationRequestId) {
+        window.cancelAnimationFrame(this.animationRequestId);
       }
     };
-    this.animation_request_id = window.requestAnimationFrame(callback);
+    this.animationRequestId = window.requestAnimationFrame(callback);
   }
 
   /**
@@ -83,7 +79,7 @@ class Engine {
    */
   destroy() {
     this.running = false;
-    this.core.input.unregister_handlers();
+    this.core.input.unregisterHandlers();
   }
 }
 

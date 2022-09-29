@@ -49,17 +49,17 @@ interface AudioTrack {
   /**
    * Audio source node
    */
-  source_node: MediaElementAudioSourceNode;
+  sourceNode: MediaElementAudioSourceNode;
 
   /**
    * Audio panning node
    */
-  panner_node: PannerNode;
+  pannerNode: PannerNode;
 
   /**
    * Audio gain node
    */
-  gain_node: GainNode;
+  gainNode: GainNode;
 
   /**
    * User-adjustable track settings

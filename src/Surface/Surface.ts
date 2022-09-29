@@ -36,7 +36,7 @@ class Surface {
    * @param width  Width of the surface
    * @param height Height of the surface
    */
-  set_size(width: number, height: number) {
+  setSize(width: number, height: number) {
     this.canvas.width = width;
     this.canvas.height = height;
   }
@@ -92,7 +92,7 @@ class Surface {
    * @param color Target color or gradient
    */
   fill(color: Color | ColorGradient) {
-    this.draw_rect(this.rect(), color, true);
+    this.drawRect(this.rect(), color, true);
   }
 
   /**
@@ -106,7 +106,7 @@ class Surface {
    * @param flip    Flip factor of the image
    * @param center  Should drawing be centered?
    */
-  draw_surface(
+  drawSurface(
     src: Surface,
     aabb: AABB,
     blend: GlobalCompositeOperation = 'source-over',
@@ -149,7 +149,7 @@ class Surface {
    * @param flip    Flip factor of the image
    * @param center  Should drawing be centered?
    */
-  draw_sprite(
+  drawSprite(
     sprite: Sprite,
     aabb: AABB,
     blend: GlobalCompositeOperation = 'source-over',
@@ -168,7 +168,7 @@ class Surface {
     this.surface.globalAlpha = opacity;
     this.surface.scale(flip.x, flip.y);
 
-    const frame = sprite.frames[sprite.current_frame];
+    const frame = sprite.frames[sprite.currentFrame];
     let point = aabb.center.copy();
     const dim = aabb.dim.copy();
     if (!dim.x && !dim.y) {
@@ -204,7 +204,7 @@ class Surface {
    * @param linewidth Width of the line
    * @param blend     Drawing blend mode
    */
-  draw_line(
+  drawLine(
     segment: Segment,
     color: Color | ColorGradient,
     linewidth = 1,
@@ -234,7 +234,7 @@ class Surface {
    * @param blend     Drawing blend mode
    * @param center    Should drawing be centered?
    */
-  draw_rect(
+  drawRect(
     aabb: AABB,
     color: Color | ColorGradient,
     fill = false,
@@ -273,7 +273,7 @@ class Surface {
    * @param linewidth Width of the outline
    * @param blend     Drawing blend mode
    */
-  draw_circle(
+  drawCircle(
     center: Vec2D,
     radius: number,
     color: Color | ColorGradient,
@@ -306,7 +306,7 @@ class Surface {
    * @param linewidth Width of the outline
    * @param blend     Drawing blend mode
    */
-  draw_polygon(
+  drawPolygon(
     points: Vec2D[],
     color: Color | ColorGradient,
     fill = false,
@@ -344,7 +344,7 @@ class Surface {
    * @param pos    Centered position of target
    * @param blend  Drawing blend mode
    */
-  draw_text(
+  drawText(
     string: string,
     font: string,
     size: number,

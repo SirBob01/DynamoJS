@@ -6,13 +6,13 @@
   "files": [
     "build"
   ],
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Game development framework for HTML5 Canvas",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "lint": "prettier --write \"src/**/*.ts\"; eslint \"./src/**/*.ts\" --fix",
-    "prepare": "rm -rf build && tsc"
+    "prepare": "rm -r build; tsc"
   },
   "repository": {
     "type": "git",

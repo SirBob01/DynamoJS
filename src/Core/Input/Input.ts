@@ -85,8 +85,10 @@ class Input {
    */
   poll(canvas: HTMLCanvasElement) {
     const keydown = (event: KeyboardEvent) => {
+      if (!event.repeat) {
+        this.pressed.set(event.key, true);
+      }
       this.state.set(event.key, true);
-      this.pressed.set(event.key, true);
     };
     const keyup = (event: KeyboardEvent) => {
       this.state.set(event.key, false);

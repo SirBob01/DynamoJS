@@ -6,7 +6,7 @@
   "files": [
     "build"
   ],
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Game development framework for HTML5 Canvas",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

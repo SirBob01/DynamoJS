@@ -18,64 +18,15 @@ class Input {
   /**
    * The main input handler.
    */
-  constructor() {
+  constructor(canvas: HTMLCanvasElement) {
     this.state = new Map();
     this.pressed = new Map();
     this.released = new Map();
 
     this.mouse = new Vec2D(0, 0);
     this.unregisterHandlers = () => {};
-  }
 
-  /**
-   * Get the state of an input.
-   * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse0 - Mouse2.
-   *
-   * @param key        Target input to be tested
-   * @param ignoreCase Ignore the capitalization of the key
-   * @return Is the input pressed or released?
-   */
-  getState(key: string, ignoreCase = false) {
-    if (ignoreCase) {
-      const upper = key.toUpperCase();
-      return (this.state.get(key) || this.state.get(upper)) ?? false;
-    }
-    return this.state.get(key) ?? false;
-  }
-
-  /**
-   * Check if input is pressed on the current frame.
-   * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse0 - Mouse2.
-   *
-   * @param key        Target input to be tested
-   * @param ignoreCase Ignore the capitalization of the key
-   * @return Is the input pressed this frame?
-   */
-  getPressed(key: string, ignoreCase = false) {
-    if (ignoreCase) {
-      const upper = key.toUpperCase();
-      return (this.pressed.get(key) || this.pressed.get(upper)) ?? false;
-    }
-    return this.pressed.get(key) ?? false;
-  }
-
-  /**
-   * Check if input is released on the current frame.
-   * Alphanumeric keys range from a - z, 0 - 9.
-   * Mouse buttons range from Mouse0 - Mouse2.
-   *
-   * @param key        Target input to be tested
-   * @param ignoreCase Ignore the capitalization of the key
-   * @return Is the input released this frame?
-   */
-  getReleased(key: string, ignoreCase = false) {
-    if (ignoreCase) {
-      const upper = key.toUpperCase();
-      return (this.released.get(key) || this.released.get(upper)) ?? false;
-    }
-    return this.released.get(key) ?? false;
+    this.poll(canvas);
   }
 
   /**
@@ -83,7 +34,7 @@ class Input {
    *
    * @param canvas Target canvas element
    */
-  poll(canvas: HTMLCanvasElement) {
+  private poll(canvas: HTMLCanvasElement) {
     const keydown = (event: KeyboardEvent) => {
       if (!event.repeat) {
         this.pressed.set(event.key, true);
@@ -135,6 +86,57 @@ class Input {
       document.removeEventListener('mousemove', mousemove);
       canvas.removeEventListener('contextmenu', canvasContextmenu, false);
     };
+  }
+
+  /**
+   * Get the state of an input.
+   * Alphanumeric keys range from a - z, 0 - 9.
+   * Mouse buttons range from Mouse0 - Mouse2.
+   *
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
+   * @return Is the input pressed or released?
+   */
+  getState(key: string, ignoreCase = false) {
+    if (ignoreCase) {
+      const upper = key.toUpperCase();
+      return (this.state.get(key) || this.state.get(upper)) ?? false;
+    }
+    return this.state.get(key) ?? false;
+  }
+
+  /**
+   * Check if input is pressed on the current frame.
+   * Alphanumeric keys range from a - z, 0 - 9.
+   * Mouse buttons range from Mouse0 - Mouse2.
+   *
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
+   * @return Is the input pressed this frame?
+   */
+  getPressed(key: string, ignoreCase = false) {
+    if (ignoreCase) {
+      const upper = key.toUpperCase();
+      return (this.pressed.get(key) || this.pressed.get(upper)) ?? false;
+    }
+    return this.pressed.get(key) ?? false;
+  }
+
+  /**
+   * Check if input is released on the current frame.
+   * Alphanumeric keys range from a - z, 0 - 9.
+   * Mouse buttons range from Mouse0 - Mouse2.
+   *
+   * @param key        Target input to be tested
+   * @param ignoreCase Ignore the capitalization of the key
+   * @return Is the input released this frame?
+   */
+  getReleased(key: string, ignoreCase = false) {
+    if (ignoreCase) {
+      const upper = key.toUpperCase();
+      return (this.released.get(key) || this.released.get(upper)) ?? false;
+    }
+    return this.released.get(key) ?? false;
   }
 
   /**

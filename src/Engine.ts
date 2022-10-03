@@ -22,7 +22,6 @@ class Engine {
     this.animationRequestId = 0;
 
     initialState.onEntry(this.core);
-    this.core.input.poll(this.core.display.canvas);
   }
 
   /**

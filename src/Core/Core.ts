@@ -30,7 +30,7 @@ class Core {
   constructor(container: HTMLElement) {
     this.display = new Display(container);
     this.audio = new Jukebox();
-    this.input = new Input();
+    this.input = new Input(this.display.canvas);
     this.clock = { dt: 0, dtCap: 100, elapsed: 0 };
   }
 }
